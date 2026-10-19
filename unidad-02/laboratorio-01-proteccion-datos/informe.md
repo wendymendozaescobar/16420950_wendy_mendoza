@@ -83,5 +83,31 @@ Primero creamos dos esquemas llamados pii y analitica para separar la informaci�
 Para generar los tokens utilizamos la función gen_random_uuid(), que genera un identificador aleatorio para cada cliente. Estos tokens se relacionaron con los ID originales que ya teníamos en la tabla public.clientes.
 Después creamos la tabla analitica.clientes, donde colocamos los tokens junto con la edad, ciudad, código postal y fecha de alta de cada cliente, sin incluir su nombre, correo, teléfono ni RFC.
 El mapa de correspondencia se encuentra en pii.mapa_cliente y solamente debería poder consultarlo el personal autorizado que necesite relacionar los tokens con los clientes originales.
-Por último, creamos el rol analista y le otorgamos permisos para consultar únicamente la tabla analitica.clientes. Separamos los permisos para evitar que el analista pueda consultar el mapa de correspondencia y descubrir la identidad de los clientes. Para comprobarlo, cambiamos al rol analista y realizamos las consultas. Pudimos visualizar los datos seudonimizados, pero PostgreSQL nos negó el acceso al mapa de correspondencia y a la tabla original.
+Por último, creamos el rol analista y le otorgamos permisos para consultar únicamente la tabla analitica.clientes. Separamos los permisos para evitar que el analista pueda consultar el mapa de correspondencia y descubrir la identidad de los clientes. Para comprobarlo, cambiamos al rol analista y realizamos las consultas. Pudimos visualizar los datos seudonimizados, pero PostgreSQL nos negó el acceso al mapa de correspondencia y a la tabla original.  
 
+## Actividad 4. Anonimización de datos  
+
+### Preguntas  
+**1. ¿Qué identificadores directos fueron eliminados?**  
+En los resultados de las consultas dejamos de mostrar el ID, nombre, correo electrónico, teléfono y RFC de los clientes. Solo mostramos los rangos de edad, las regiones y la cantidad de clientes que pertenecen a cada grupo. Los datos originales siguen almacenados en la tabla clientes.  
+**2. ¿Qué cuasi-identificadores permanecen?**  
+Permanecen la edad y la región.   
+**3. ¿Qué combinaciones de atributos podrían reducir el anonimato?**  
+La combinación del rango de edad y la región puede reducir el anonimato. En nuestras consultas encontramos dos grupos que contienen solamente un cliente, lo que aumenta el riesgo de identificar a esas personas.  
+**4. ¿Qué sucede cuando un grupo contiene pocos registros?**  
+Aumenta el riesgo de reidentificación porque es más fácil distinguir a una persona cuando hay pocos registros con las mismas características. Por eso utilizamos HAVING COUNT(*) >= 5 para evitar mostrar grupos pequeños.  
+**5. ¿Qué atributos deberían generalizarse?**  
+Se podrían generalizar todavía más la edad y la región. Por ejemplo, utilizar rangos de edad más amplios y mostrar una región geográfica menos específica para evitar que los grupos tengan pocos registros.  
+**6. ¿Qué información debería suprimirse?**  
+Se deberían suprimir de los resultados los grupos que tengan pocos registros, especialmente aquellos que contienen una sola persona. También se deben evitar los identificadores directos, como nombres, correos, teléfonos y RFC, cuando no sean necesarios para el análisis.  
+**7. ¿Es correcto afirmar que el conjunto de datos es «100 % anónimo»? ¿Por qué?**  
+No, porque aunque generalizamos los datos y eliminamos los identificadores directos de los resultados, todavía podría existir el riesgo de identificar a una persona utilizando información adicional. Por eso no podemos garantizar que los datos sean completamente anónimos.  
+
+### Reto: Reducir el riesgo de reidentificación  
+Modificamos la consulta para ampliar el rango de edad de 18 a 60 años y mostrar solamente el primer carácter del código postal, en lugar de los primeros dos. Mantuvimos la condición HAVING COUNT(*) >= 5.
+Anteriormente teníamos tres grupos de clientes, dos con un solo registro y otro con tres. Esto aumentaba el riesgo de reidentificación, por lo que decidimos generalizar más la información. Después de modificar la consulta, PostgreSQL mostró un solo grupo con cinco clientes, todos dentro del rango de edad de 18 a 60 años y con una región que comienza con 8.
+Buscamos reducir el riesgo de identificar individualmente a los clientes mediante la combinación de su edad y ubicación geográfica.  
+
+### Explicación del mecanismo de anonimización  
+En esta actividad realizamos consultas para mostrar información estadística de los clientes sin incluir sus identificadores directos, como el nombre, ID, correo, teléfono y RFC. Estos datos no se eliminaron de la tabla original, solamente dejaron de mostrarse en los resultados. Generalizamos la edad utilizando rangos y el código postal mostrando únicamente sus primeros dos caracteres. Después combinamos ambos atributos para identificar cuántos clientes pertenecían a cada grupo. Encontramos dos grupos con un solo cliente y otro con tres, por lo que utilizamos HAVING COUNT(*) >= 5 para suprimir de los resultados los grupos con menos de cinco registros. Como ninguno cumplía la condición, la consulta devolvió cero filas.  
+Finalmente, ampliamos los rangos de edad y generalizamos más la región, consiguiendo un grupo de cinco clientes. Esto reduce el riesgo de reidentificación, aunque no garantiza que los datos sean completamente anónimos porque podría existir información adicional que permita identificar a una persona.
