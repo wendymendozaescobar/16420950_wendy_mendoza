@@ -38,4 +38,25 @@ Edad y ciudad, código postal y ciudad, o edad y código postal. Tambien se pued
 **4. ¿Todos los datos que deben protegerse son necesariamente datos personales sensibles desde el punto de vista jurídico?** 
 
 No, porque existen diferentes tipos de datos personales. Algunos, como el nombre, correo electrónico y teléfono, necesitan protección para evitar que se utilicen de manera indebida, pero no necesariamente son datos personales sensibles.
-Los datos sensibles requieren una protección especial debido a los riesgos que puede generar su uso o divulgación.
+Los datos sensibles requieren una protección especial debido a los riesgos que puede generar su uso o divulgación.  
+
+## Actividad 2. Enmascaramiento de datos.
+### Preguntas
+
+**1. ¿Qué información continúa existiendo en la tabla original?**  
+Toda ya que no modificamos nada de la tabla original.  
+
+**2. ¿Qué información puede visualizar el usuario soporte?**  
+Solo la view v_cliente_soporte que creamos donde solo puede ver el id y el nombre completo, tambien puede ver el correo pero las dos primeras letras se conservan, las siguientes 5 letras no se pueden visualizar y apartir del @ del correo se ve todo. El telefono solo puede visualizar los ultimos 4 digitos y tambien en el rfc solo puede ver los ultimos 4 datos.  
+
+**3. ¿Por qué no es suficiente ocultar los datos únicamente en la aplicación?**   
+Porque si los datos solo se ocultan en la aplicación, una persona que tenga acceso directo a la base de datos podría consultar la tabla original y visualizar toda la información. Por eso también es necesario aplicar restricciones desde PostgreSQL para que cada usuario tenga acceso solamente a los datos que necesita. 
+
+**4. ¿Qué ocurriría si soporte tuviera acceso directo a clientes?**  
+La empresa tiene la obligación de no divulgar datos personales de sus usuarios ademas de que es algo que por organizacion se recomienda ya que no es un dato necesario para realizar el trabajo del area de soporte.  
+
+### Explicación del mecanismo de enmascaramiento  
+Se crea una vista a la cual se le asigna un nombre y seleccionamos qué es lo que se quiere visualizar. En este caso, es el ID y el nombre completo. Del correo solo mostramos los primeros dos caracteres, indicamos que se concatenen 5 asteriscos y después concatenamos todo el dominio a partir del @. También en el teléfono concatenamos 6 asteriscos y mostramos los últimos 4 dígitos. Después, concatenamos 9 asteriscos y mostramos los últimos 4 caracteres del RFC. Al final indicamos que los datos provienen de la tabla clientes.
+Otorgamos el permiso USAGE sobre el esquema public al rol soporte y después le dimos permiso SELECT para consultar la vista v_clientes_soporte. También utilizamos REVOKE ALL para retirar los permisos directos sobre la tabla clientes.
+Para comprobar que los permisos funcionaran, utilizamos SET ROLE soporte y realizamos consultas. Pudimos visualizar la vista con los datos enmascarados, pero cuando intentamos consultar directamente la tabla clientes, PostgreSQL mostró un error de permisos.
+Este mecanismo se implementó para el área de soporte, ya que necesita consultar cierta información de los clientes para realizar su trabajo, pero no requiere visualizar los correos, teléfonos y RFC completos.
