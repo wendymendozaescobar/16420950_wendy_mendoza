@@ -9,7 +9,7 @@
 ## Actividad 1. Clasificación de los datos
 ### Matriz de clasificación
 
-| Campo | ¿Identifica directamente? | ¿Puede contribuir a identificar? | ¿Requiere protección | Justificación |
+| Campo | ¿Identifica directamente? | ¿Puede contribuir a identificar? | ¿Requiere protección? | Justificación |
 |---|---|---|---|---|
 | id | no | si | si | Por si solo no revela la identidad de una persona, pero permite relacionarlo con otros datos que si puedan identificarla. |
 | nombre | si | si | si | Es un dato personal que puede identificar directamente a una persona dependiendo del contexto. Requiere protección para evitar su divulgación o utilización no autorizada. |
@@ -20,7 +20,6 @@
 | ciudad | no | si | si | Por si sola no identifica a ninguna persona, porque muchas personas pueden vivir en donde mismo. Pero cuando se combina con otros datos puede facilitar su identificaión y revelar información sobre su ubicación. |
 | codigo_postal | no | si | si | No identifica directamente a una persona, ya que en la zona de ese CP viven muchas personas. Pero al combinarse con otros datos puede identificar su localización aproximada o su identidad. |
 | fecha_alta | no | si | si | No identifica directamente a una persona ya que varios clientes se pueden registrar el mismo día. Sin embargo, cuando se combina con otros datos puede contribuir a su identificación. |
-|
 
 ### Preguntas de análisis 
 **1. ¿Qué campos identifican directamente a una persona?** 
@@ -47,7 +46,7 @@ Los datos sensibles requieren una protección especial debido a los riesgos que 
 Toda ya que no modificamos nada de la tabla original.  
 
 **2. ¿Qué información puede visualizar el usuario soporte?**  
-Solo la view v_cliente_soporte que creamos donde solo puede ver el id y el nombre completo, tambien puede ver el correo pero las dos primeras letras se conservan, las siguientes 5 letras no se pueden visualizar y apartir del @ del correo se ve todo. El telefono solo puede visualizar los ultimos 4 digitos y tambien en el rfc solo puede ver los ultimos 4 datos.  
+Solo la view v_clientes_soporte que creamos donde solo puede ver el id y el nombre completo, tambien puede ver el correo pero las dos primeras letras se conservan, las siguientes 5 letras no se pueden visualizar y apartir del @ del correo se ve todo. El telefono solo puede visualizar los ultimos 4 digitos y tambien en el rfc solo puede ver los ultimos 4 datos.  
 
 **3. ¿Por qué no es suficiente ocultar los datos únicamente en la aplicación?**   
 Porque si los datos solo se ocultan en la aplicación, una persona que tenga acceso directo a la base de datos podría consultar la tabla original y visualizar toda la información. Por eso también es necesario aplicar restricciones desde PostgreSQL para que cada usuario tenga acceso solamente a los datos que necesita. 
@@ -110,4 +109,62 @@ Buscamos reducir el riesgo de identificar individualmente a los clientes mediant
 
 ### Explicación del mecanismo de anonimización  
 En esta actividad realizamos consultas para mostrar información estadística de los clientes sin incluir sus identificadores directos, como el nombre, ID, correo, teléfono y RFC. Estos datos no se eliminaron de la tabla original, solamente dejaron de mostrarse en los resultados. Generalizamos la edad utilizando rangos y el código postal mostrando únicamente sus primeros dos caracteres. Después combinamos ambos atributos para identificar cuántos clientes pertenecían a cada grupo. Encontramos dos grupos con un solo cliente y otro con tres, por lo que utilizamos HAVING COUNT(*) >= 5 para suprimir de los resultados los grupos con menos de cinco registros. Como ninguno cumplía la condición, la consulta devolvió cero filas.  
-Finalmente, ampliamos los rangos de edad y generalizamos más la región, consiguiendo un grupo de cinco clientes. Esto reduce el riesgo de reidentificación, aunque no garantiza que los datos sean completamente anónimos porque podría existir información adicional que permita identificar a una persona.
+Finalmente, ampliamos los rangos de edad y generalizamos más la región, consiguiendo un grupo de cinco clientes. Esto reduce el riesgo de reidentificación, aunque no garantiza que los datos sean completamente anónimos porque podría existir información adicional que permita identificar a una persona.  
+
+## Actividad 5. Retención de datos
+
+### Explicación del procedimiento de retención  
+En esta actividad utilizamos una consulta SQL para identificar los clientes cuya fecha de alta fuera anterior a cinco años. Al ejecutar la consulta obtuvimos cero filas, porque ninguno de nuestros cinco clientes supera ese periodo.  
+Utilizamos un periodo hipotético de conservación de cinco años. En una empresa real, este periodo debería justificarse según las necesidades de la organización y las obligaciones legales que correspondan.
+La información que todavía sea necesaria para las operaciones de la empresa o que deba conservarse por alguna obligación legal tendría que mantenerse protegida. Los registros que superen el periodo establecido podrían evaluarse para su eliminación, siempre que ya no exista una razón válida para conservarlos.
+Antes de eliminar información, debería existir una autorización del responsable correspondiente, después de verificar que no haya obligaciones pendientes. También sería necesario realizar un respaldo seguro y comprobar que pueda recuperarse.
+Como evidencia, se debería conservar un registro de los datos afectados, la fecha del procedimiento, quién lo autorizó, quién lo realizó y cuál fue el resultado.
+Si se eliminara información accidentalmente, se tendría que seguir un procedimiento de recuperación utilizando el respaldo correspondiente y verificar que los registros se hayan restaurado correctamente.  
+
+## Conclusiones  
+
+**1. ¿Qué técnica utilizarías para un área de soporte?**  
+Utilizaría el enmascaramiento de datos, porque el personal de soporte necesita consultar cierta información de los clientes, pero no requiere visualizarla completamente. Con una vista podemos mostrar solamente los datos necesarios y ocultar parcialmente los correos, teléfonos y RFC.  
+
+**2. ¿Qué técnica utilizarías para un área de analítica?**  
+Utilizaría la seudonimización, porque permite analizar información de los clientes sin utilizar directamente sus datos personales. Los identificadores originales se sustituyen por tokens y el mapa de correspondencia se mantiene protegido para evitar que los analistas puedan identificar a las personas.  
+
+**3. ¿Qué técnica utilizarías para publicar estadísticas?**  
+Utilizaría la anonimización, porque al publicar estadísticas no es necesario mostrar información que identifique individualmente a los clientes. Podemos generalizar atributos, agrupar registros y suprimir grupos pequeños para reducir el riesgo de reidentificación. También sería necesario evaluar los riesgos antes de publicar la información.  
+
+**4. ¿Por qué ninguna de estas técnicas sustituye al control de acceso?**  
+Porque aunque ocultemos, sustituyamos o generalicemos los datos, todavía es necesario controlar quién puede consultar la información. Por eso utilizamos permisos como GRANT y REVOKE, para que cada rol tenga acceso únicamente a lo que necesita para realizar su trabajo.  
+
+## Preguntas de reflexión
+
+**1. ¿Cuál es la diferencia entre enmascaramiento y seudonimización?**  
+El enmascaramiento consiste en ocultar una parte o totalmente ciertos datos. En cambio la seudonimización sustituye los identificadores originales por otros valores, como los tokens que generamos en PostgreSQL.  
+
+**2. ¿Por qué la seudonimización no significa anonimización?**  
+Porque en la seudonimización todavía existe la posibilidad de identificar a las personas utilizando el mapa de correspondencia y en la anonimización busca evitar que las personas puedan ser identificadas mediante medios razonablemente disponibles.  
+
+**3. ¿Por qué eliminar nombre y RFC no garantiza que un conjunto de datos sea anónimo?** 
+Porque existen otros datos, como la edad, ciudad y código postal, que al combinarse podrían permitir identificar a una persona, aunque no se muestre su nombre o RFC.  
+
+**4. ¿Qué función tienen los cuasi-identificadores?**  
+Son datos que individualmente no necesariamente identifican a una persona, pero que al combinarse con otros pueden facilitar su identificación. Por ejemplo, la edad y el código postal.  
+
+**5. ¿Por qué es importante separar el mapa de seudonimización?**  
+Porque contiene la relación entre los tokens y los identificadores originales. Si el analista pudiera consultar ese mapa y relacionarlo con los datos originales, podría descubrir a qué cliente pertenece cada token.  
+
+**6. ¿Qué principio de seguridad se aplica al impedir que el analista acceda al mapa?**  
+El principio de mínimo privilegio.  
+
+**7. ¿Por qué una vista puede ser preferible a entregar acceso directo a la tabla?**  
+Porque una vista permite mostrar únicamente las columnas o los datos que necesita el usuario. En nuestro laboratorio utilizamos una vista para mostrar información enmascarada sin permitir que el rol soporte consulte directamente la tabla original.  
+
+**8. ¿Qué diferencia existe entre proteger un dato para visualización y protegerlo contra acceso no autorizado?**  
+Proteger un dato para visualización significa ocultar cierta información cuando se muestra al usuario. En cambio, protegerlo contra accesos no autorizados significa configurar permisos para impedir que usuarios sin autorización puedan consultar esa información directamente.  
+
+**9. ¿Por qué la retención forma parte de la protección de datos?**  
+Porque permite establecer durante cuánto tiempo es necesario conservar la información. Así se evita almacenar datos personales durante más tiempo del necesario y se reduce el riesgo de exposición.  
+
+**10. ¿Qué riesgo existe si una organización conserva información indefinidamente?**  
+Aumenta el riesgo de que la información sea robada, filtrada o utilizada de manera indebida. Además, la organización podría conservar datos que ya no necesita e incumplir las obligaciones legales relacionadas con su conservación.  
+
+
