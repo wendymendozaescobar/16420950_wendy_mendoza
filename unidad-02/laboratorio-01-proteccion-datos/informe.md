@@ -59,4 +59,29 @@ La empresa tiene la obligación de no divulgar datos personales de sus usuarios 
 Se crea una vista a la cual se le asigna un nombre y seleccionamos qué es lo que se quiere visualizar. En este caso, es el ID y el nombre completo. Del correo solo mostramos los primeros dos caracteres, indicamos que se concatenen 5 asteriscos y después concatenamos todo el dominio a partir del @. También en el teléfono concatenamos 6 asteriscos y mostramos los últimos 4 dígitos. Después, concatenamos 9 asteriscos y mostramos los últimos 4 caracteres del RFC. Al final indicamos que los datos provienen de la tabla clientes.
 Otorgamos el permiso USAGE sobre el esquema public al rol soporte y después le dimos permiso SELECT para consultar la vista v_clientes_soporte. También utilizamos REVOKE ALL para retirar los permisos directos sobre la tabla clientes.
 Para comprobar que los permisos funcionaran, utilizamos SET ROLE soporte y realizamos consultas. Pudimos visualizar la vista con los datos enmascarados, pero cuando intentamos consultar directamente la tabla clientes, PostgreSQL mostró un error de permisos.
-Este mecanismo se implementó para el área de soporte, ya que necesita consultar cierta información de los clientes para realizar su trabajo, pero no requiere visualizar los correos, teléfonos y RFC completos.
+Este mecanismo se implementó para el área de soporte, ya que necesita consultar cierta información de los clientes para realizar su trabajo, pero no requiere visualizar los correos, teléfonos y RFC completos.  
+
+## Actividad 3. Seudonimización de datos
+
+### Preguntas
+
+**1. ¿Qué ocurriría si analista pudiera consultar también pii.mapa_cliente?**  
+Pudiera ver la relacion de cada token con el id original del cliente, lo que aumentaría el riesgo de identificar a las personas si también tuviera acceso a la información original.
+
+**2. ¿Qué principio de seguridad se está aplicando al separar ambos accesos?**  
+Principio de minimo privilegio  
+
+**3. ¿Por qué la seudonimización no equivale a anonimización?**  
+Porque en la seudonimización todavía existe la posibilidad de identificar a los clientes mediante el mapa de correspondencia que relaciona los tokens con sus identificadores originales. En cambio, la anonimización busca que no sea posible identificar a las personas mediante medios razonablemente disponibles.
+
+**4. ¿Qué información permite volver a relacionar el token con una persona?**  
+La tabla pii.mapa_cliente, porque contiene la relación entre los tokens y los ID originales de los clientes. Con esos ID podemos consultar la tabla public.clientes y conocer a qué persona pertenece cada token.
+
+### Explicación del mecanismo de seudonimización  
+
+Primero creamos dos esquemas llamados pii y analitica para separar la información. Después dentro del esquema pii, creamos una tabla llamada mapa_cliente, donde guardamos los tokens y los ID originales de los clientes.
+Para generar los tokens utilizamos la función gen_random_uuid(), que genera un identificador aleatorio para cada cliente. Estos tokens se relacionaron con los ID originales que ya teníamos en la tabla public.clientes.
+Después creamos la tabla analitica.clientes, donde colocamos los tokens junto con la edad, ciudad, código postal y fecha de alta de cada cliente, sin incluir su nombre, correo, teléfono ni RFC.
+El mapa de correspondencia se encuentra en pii.mapa_cliente y solamente debería poder consultarlo el personal autorizado que necesite relacionar los tokens con los clientes originales.
+Por último, creamos el rol analista y le otorgamos permisos para consultar únicamente la tabla analitica.clientes. Separamos los permisos para evitar que el analista pueda consultar el mapa de correspondencia y descubrir la identidad de los clientes. Para comprobarlo, cambiamos al rol analista y realizamos las consultas. Pudimos visualizar los datos seudonimizados, pero PostgreSQL nos negó el acceso al mapa de correspondencia y a la tabla original.
+
