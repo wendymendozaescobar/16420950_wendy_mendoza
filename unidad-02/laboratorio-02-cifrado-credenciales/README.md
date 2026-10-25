@@ -41,3 +41,28 @@ una clave fija para recuperarlas posteriormente.
 
 - [Comandos SQL](sql/01-credenciales.sql)
 - [Resultados y preguntas](evidencias/01-credenciales.md)
+
+### Actividad 2. Cifrado de información sensible
+
+En esta actividad implementamos cifrado simétrico utilizando las funciones `pgp_sym_encrypt()` y `pgp_sym_decrypt()` de PostgreSQL.
+
+Se creó una tabla llamada `clientes_protegidos`, donde almacenamos un RFC ficticio en formato cifrado mediante una clave de prueba.
+
+#### Resultados
+
+Al consultar la tabla, comprobamos que el RFC no aparecía directamente como texto legible.
+
+Posteriormente, utilizamos la clave correcta para descifrarlo y PostgreSQL recuperó el valor original `LOPA900101ABC`.
+
+También realizamos una prueba con una clave incorrecta y PostgreSQL mostró un error de descifrado.
+
+#### Consideraciones de seguridad
+
+El cifrado simétrico permite recuperar información protegida cuando se dispone de la clave correcta.
+
+Sin embargo, la seguridad también depende de cómo se administran las claves. En aplicaciones reales, estas no deben almacenarse directamente en consultas SQL ni publicarse en repositorios.
+
+#### Evidencias
+
+- [Comandos SQL](sql/02-cifrado-datos.sql)
+- [Resultados y preguntas](evidencias/02-cifrado-datos.md)
