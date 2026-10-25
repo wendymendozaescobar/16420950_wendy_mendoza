@@ -66,3 +66,31 @@ Sin embargo, la seguridad también depende de cómo se administran las claves. E
 
 - [Comandos SQL](sql/02-cifrado-datos.sql)
 - [Resultados y preguntas](evidencias/02-cifrado-datos.md)
+
+### Actividad 3. Gestión de claves
+
+Se analizaron los riesgos de almacenar claves criptográficas
+directamente en archivos SQL y repositorios Git.
+
+#### Procedimiento y resultados
+
+Se creó un archivo temporal que contenía una consulta
+de descifrado con una clave ficticia.
+
+Se identificó que publicar este tipo de archivos puede
+exponer las claves utilizadas para proteger información.
+
+Después del análisis se eliminó el archivo temporal,
+siguiendo las instrucciones del laboratorio.
+
+#### Conclusión
+
+La seguridad de los datos cifrados depende también
+de la protección de sus claves criptográficas.
+
+Eliminar una clave expuesta del archivo no garantiza
+su eliminación del historial de Git.
+
+#### Evidencia
+
+- [Gestión de claves](evidencias/03-gestion-claves.md)
