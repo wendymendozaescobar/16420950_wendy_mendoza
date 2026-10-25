@@ -94,3 +94,26 @@ su eliminación del historial de Git.
 #### Evidencia
 
 - [Gestión de claves](evidencias/03-gestion-claves.md)
+
+### Actividad 4. Protección de datos durante la comunicación
+
+Se analizó la importancia de proteger la información transmitida entre los clientes y PostgreSQL.
+
+Se identificó que TLS proporciona mecanismos de confidencialidad, integridad y autenticación para las comunicaciones.
+
+### Actividad 5. Verificación del estado de TLS
+
+Se consultó la configuración SSL/TLS del servidor PostgreSQL y se verificó el estado de la conexión actual.
+
+#### Resultados
+
+PostgreSQL tenía SSL/TLS habilitado, con TLS 1.2 como versión mínima y el puerto 5433 configurado.
+
+Sin embargo, la conexión actual no utilizaba TLS porque se estableció mediante un socket Unix local.
+
+Esto permitió comprender la diferencia entre tener TLS habilitado en el servidor y utilizarlo realmente en una conexión.
+
+#### Evidencias
+
+- [Comandos de verificación TLS](sql/03-verificacion-tls.sql)
+- [Resultados y análisis de TLS](evidencias/04-tls.md)
