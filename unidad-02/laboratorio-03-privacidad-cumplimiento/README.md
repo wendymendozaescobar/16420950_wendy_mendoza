@@ -79,3 +79,63 @@ También permitió comprender que el diseño de tablas y los permisos de acceso 
 ### Archivo SQL
 
 - [Minimización de datos](sql/01-minimizacion.sql)
+
+## 4. Separación por finalidad
+
+### Objetivo
+
+Generar información estadística para el departamento de analítica sin proporcionar directamente los datos personales que identifican a los clientes.
+
+### Procedimiento
+
+Se realizaron consultas SQL sobre la tabla `public.clientes`, utilizando funciones de agrupación y conteo.
+
+Primero se agruparon los clientes por ciudad mediante `COUNT()` y `GROUP BY`.
+
+Posteriormente, se utilizó `CASE` para clasificar a los clientes por rangos de edad.
+
+Como complemento, se agruparon los códigos postales utilizando sus dos primeros caracteres.
+
+### Resultados
+
+Las consultas permitieron obtener estadísticas agrupadas sin incluir nombres, correos electrónicos, teléfonos ni RFC en los resultados.
+
+Se utilizaron las siguientes herramientas de SQL:
+
+- `COUNT()` para contar registros.
+- `GROUP BY` para agrupar información.
+- `ORDER BY` para ordenar resultados.
+- `CASE` para crear categorías de edad.
+- `LEFT()` para obtener prefijos postales.
+
+Los resultados corresponden a grupos de clientes y no a registros individuales completos.
+
+### Pregunta de análisis
+
+**¿Por qué esta información puede ser más apropiada para analítica que entregar directamente la tabla completa de clientes?**
+
+Porque el departamento de analítica necesita generar estadísticas y no identificar individualmente a cada cliente.
+
+Las consultas agrupadas permiten conocer la distribución de los clientes por ciudad, edad y prefijo postal sin proporcionar directamente sus nombres, correos, teléfonos ni RFC.
+
+Esto contribuye a reducir la exposición de datos personales y aplica los principios de minimización y limitación de finalidad.
+
+Sin embargo, los resultados agregados también deben evaluarse, porque los grupos con muy pocos registros podrían facilitar la identificación de personas al combinarse con otra información.
+
+### Análisis
+
+La separación por finalidad permite proporcionar información diferente a cada departamento, dependiendo de sus funciones.
+
+Atención al cliente necesita información para contactar personas, mientras que analítica requiere principalmente datos estadísticos.
+
+Esto demuestra que no es necesario entregar acceso directo a toda la tabla para obtener resultados útiles.
+
+### Conclusión
+
+Se comprobó que las consultas de agrupación permiten generar información útil para analítica y disminuir la exposición de datos personales.
+
+En un entorno productivo sería recomendable implementar vistas y controles de acceso que permitan consultar únicamente la información necesaria.
+
+### Archivo SQL
+
+- [Consultas de separación por finalidad](sql/02-finalidad.sql)
