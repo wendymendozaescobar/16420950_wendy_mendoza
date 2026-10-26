@@ -759,6 +759,55 @@ Durante esta actividad no se cambiaron parámetros del servidor.
 
 **Script utilizado:** [03-configuracion.sql](sql/03-configuracion.sql).
 
+### Actividad 12. Revisar permisos del sistema operativo
+
+**Objetivo**
+
+Verificar los propietarios, grupos y permisos de los archivos y directorios sensibles de PostgreSQL en Ubuntu.
+
+**Procedimiento**
+
+Se utilizaron los comandos `ls -l` y `ls -ld` para inspeccionar los permisos de los archivos `postgresql.conf`, `pg_hba.conf`, el directorio de datos y el directorio de configuración.
+
+**Resultados**
+
+| Elemento | Permisos | Propietario | Grupo | Evaluación |
+|---|---|---|---|---|
+| `postgresql.conf` | `640` | postgres | postgres | Acceso restringido |
+| `pg_hba.conf` | `640` | postgres | postgres | Acceso restringido |
+| `/var/lib/postgresql/18/main` | `700` | postgres | postgres | Directorio protegido |
+| `/etc/postgresql/18/main` | `755` | postgres | postgres | Directorio accesible; archivos protegidos individualmente |
+
+### Análisis
+
+Los archivos `postgresql.conf` y `pg_hba.conf` permiten lectura y escritura al propietario, lectura al grupo y ningún acceso ordinario a los demás usuarios.
+
+El directorio de datos tiene permisos `700`, por lo que solamente su propietario dispone de permisos ordinarios sobre él.
+
+El directorio de configuración tiene permisos `755`, que permiten a otros usuarios recorrerlo y consultar su contenido a nivel de nombres. Sin embargo, los permisos individuales de los archivos restringen su lectura y modificación.
+
+No se identificó una necesidad inmediata de modificar los permisos inspeccionados.
+
+### Pregunta de análisis
+
+**¿Por qué no es suficiente proteger PostgreSQL mediante GRANT y REVOKE si cualquier usuario del sistema operativo puede leer archivos sensibles?**
+
+Porque `GRANT` y `REVOKE` controlan privilegios sobre objetos administrados por PostgreSQL, pero no sustituyen los mecanismos de protección de archivos del sistema operativo.
+
+Si un usuario no autorizado pudiera leer archivos sensibles, podría obtener información sobre la configuración del servidor o acceder a información que debería permanecer protegida.
+
+Además, si pudiera modificar archivos como `pg_hba.conf`, podría intentar alterar las condiciones de autenticación.
+
+Por esta razón, la seguridad de PostgreSQL también requiere controlar los permisos de archivos y directorios desde Ubuntu.
+
+### Conclusión
+
+Se comprobó que los archivos de configuración y el directorio de datos presentan permisos restrictivos.
+
+La actividad permitió comprender la importancia de combinar los controles de autorización de PostgreSQL con los permisos del sistema operativo.
+
+No se modificaron propietarios, grupos ni permisos durante esta actividad.
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
