@@ -1102,7 +1102,21 @@ La ausencia de cambios no implica que se haya completado todo el hardening del s
 
 ## Justificación de los cambios
 
-Pendiente de documentar.
+### Actividad 19. Construcción de una línea base de seguridad
+
+Se elaboró una propuesta de configuración segura que comprende siete áreas: red, autenticación, autorización, configuración, sistema operativo, cifrado y mantenimiento.
+
+La línea base utiliza como referencia los resultados obtenidos durante las actividades anteriores y establece recomendaciones para los controles que requieren mejoras.
+
+Se identificó que varias medidas ya estaban configuradas adecuadamente en el servidor, por lo que no se realizaron cambios innecesarios.
+
+También se reconocieron aspectos pendientes de evaluación, como los tiempos de espera, los registros de conexiones, la separación de cuentas de aplicación y las políticas de actualización.
+
+La propuesta distingue claramente entre controles comprobados y medidas recomendadas que todavía no se han implementado.
+
+**Documento:** [Línea base de seguridad](configuracion/baseline.md).
+
+**Comparación antes y después:** [Registro de cambios](configuracion/cambios.md).
 
 ## Verificación
 
