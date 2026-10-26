@@ -1003,7 +1003,71 @@ Pendiente de completar después de las actividades de hardening.
 
 ## Checklist de hardening
 
-Pendiente de elaborar en la Actividad 17.
+### Actividad 17. Elaborar checklist de hardening
+
+**Objetivo**
+
+Elaborar una lista de verificación de seguridad para evaluar los controles existentes en PostgreSQL, utilizando los resultados obtenidos durante las actividades anteriores.
+
+**Procedimiento**
+
+Se revisaron los resultados de las inspecciones realizadas sobre el servidor PostgreSQL 18.6 y el sistema operativo Ubuntu.
+
+Se evaluaron los quince controles propuestos en el laboratorio, indicando su estado y la evidencia que respalda cada evaluación.
+
+Se utilizaron los siguientes estados:
+
+- **Sí:** el control fue comprobado o documentado según su propósito.
+- **Parcial:** solamente se verificaron algunos aspectos del control.
+- **No:** el control todavía no se ha implementado o documentado.
+
+### Checklist de hardening
+
+| # | Control | Verificado | Evidencia |
+|---|---|---|---|
+| 1 | Puerto documentado | Sí | Se comprobó el puerto `5433` mediante `SHOW port` y `ss`. |
+| 2 | Interfaces de escucha justificadas | Sí | Se verificó `localhost` y la escucha TCP en `127.0.0.1:5433`. |
+| 3 | `pg_hba.conf` revisado | Sí | Se analizaron siete reglas mediante `pg_hba_file_rules`. |
+| 4 | Redes autorizadas restringidas | Sí, en la configuración TCP inspeccionada | PostgreSQL escucha únicamente en la interfaz local y las reglas revisadas contemplan orígenes locales. |
+| 5 | Autenticación segura | Parcial | Se comprobó el uso de `scram-sha-256` en conexiones TCP locales y `peer` en conexiones mediante sockets Unix. No se realizó una auditoría completa de credenciales. |
+| 6 | Superusuarios identificados | Sí | Se comprobó que `postgres` tiene privilegios `SUPERUSER`. |
+| 7 | Cuentas de aplicación separadas | No, solamente diseño conceptual | Se propusieron cuentas DBA, APP y CONSULTA. No se implementó esa arquitectura de cuentas. |
+| 8 | Privilegios mínimos | Parcial | Se identificaron roles sin privilegios administrativos, pero no se realizó una auditoría completa de permisos sobre todos los objetos. |
+| 9 | Extensiones revisadas | Sí | Se identificaron `pgcrypto` 1.4 y `plpgsql` 1.0. |
+| 10 | TLS verificado | Sí, para el cifrado de la conexión probada | Se comprobó una conexión TCP con TLS 1.3 mediante `lab02_tls`. La validación de identidad del servidor requiere una revisión adicional. |
+| 11 | Configuración protegida | Sí, en los permisos revisados | `postgresql.conf` y `pg_hba.conf` tienen permisos `640`. |
+| 12 | Directorio de datos protegido | Sí, en los permisos revisados | `/var/lib/postgresql/18/main` tiene permisos `700`. |
+| 13 | Firewall documentado | Sí, diseño conceptual | Se elaboró una política que permite una red autorizada y deniega otros orígenes. No se aplicaron reglas al firewall. |
+| 14 | Actualizaciones documentadas | No | Está pendiente elaborar una política de actualización y revisión periódica. |
+| 15 | Configuración registrada | Sí | Se documentaron los parámetros inspeccionados y la comparación antes/después en `configuracion/cambios.md`. |
+
+### Análisis
+
+De los quince controles, varios pudieron verificarse directamente mediante consultas a PostgreSQL y comandos de Ubuntu.
+
+Se comprobó que el servidor escucha únicamente en una interfaz TCP local, utiliza métodos de autenticación identificados y cuenta con permisos restrictivos sobre sus archivos principales.
+
+También se verificó una conexión cifrada mediante TLS 1.3.
+
+Sin embargo, no todos los controles se encuentran implementados completamente.
+
+La separación de cuentas administrativas y de aplicación se realizó de manera conceptual. Asimismo, la revisión de privilegios y autenticación fue parcial.
+
+La política de firewall se documentó, pero no fue aplicada al sistema operativo.
+
+Finalmente, se identificó que todavía debe elaborarse una política de actualizaciones y revisiones periódicas.
+
+Estos resultados permiten distinguir entre controles comprobados, controles parcialmente revisados y mejoras pendientes.
+
+### Conclusión
+
+Se elaboró un checklist de quince controles de hardening utilizando los resultados reales del laboratorio.
+
+La actividad permitió comprobar qué medidas de seguridad se encuentran presentes y cuáles necesitan una evaluación o implementación adicional.
+
+También se comprendió que una lista de verificación no debe limitarse a marcar controles como completados, sino que debe respaldar cada evaluación mediante evidencia.
+
+No se modificó la configuración del servidor durante esta actividad.
 
 ## Conclusiones
 
