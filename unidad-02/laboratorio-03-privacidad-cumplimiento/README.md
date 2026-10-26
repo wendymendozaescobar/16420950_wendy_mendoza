@@ -601,3 +601,45 @@ Una política documentada permite justificar la conservación de información y 
 ### Evidencia
 
 - [Política de retención de datos](evidencias/10-retencion.md)
+
+## 12. Matriz de gobierno de datos
+
+### Objetivo
+
+Relacionar los principales datos personales de la organización con sus finalidades, responsables y usuarios autorizados.
+
+### Procedimiento
+
+Se elaboró una matriz de gobierno de datos para los campos nombre, correo, teléfono, RFC, edad, ciudad y código postal.
+
+Se identificaron las necesidades funcionales de atención al cliente, facturación y analítica.
+
+Posteriormente, se propusieron responsables y permisos de acceso de acuerdo con las finalidades de cada departamento.
+
+### Resultados
+
+Se determinó que atención al cliente requiere principalmente información de identificación y contacto.
+
+Facturación necesita acceder a los datos fiscales correspondientes.
+
+Analítica puede utilizar información agrupada por ciudad, edad y región sin recibir automáticamente identificadores personales.
+
+También se identificó que el DBA debe implementar los controles técnicos autorizados, pero no decidir por sí solo las finalidades del tratamiento.
+
+### Análisis
+
+La matriz permite relacionar las responsabilidades organizacionales con los permisos que posteriormente pueden implementarse en PostgreSQL.
+
+El gobierno de datos ayuda a evitar que todos los departamentos reciban acceso a toda la información.
+
+Las responsabilidades propuestas deben validarse formalmente antes de aplicarse en un entorno productivo.
+
+### Conclusión
+
+El gobierno de datos permite establecer responsabilidades claras sobre la utilización y protección de información.
+
+Una matriz de responsabilidades ayuda a aplicar los principios de minimización, limitación de finalidad y mínimo privilegio.
+
+### Evidencia
+
+- [Matriz de gobierno de datos](evidencias/11-gobierno-datos.md)
