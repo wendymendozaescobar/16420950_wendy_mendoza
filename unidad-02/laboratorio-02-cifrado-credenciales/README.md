@@ -141,3 +141,18 @@ También se identificó que solicitar TLS no equivale a validar completamente la
 - [Consultas SQL](sql/03-verificacion-tls.sql)
 - [Resultados de TLS](evidencias/04-tls.md)
 
+### Actividad 7. Comparación de protección en reposo y en tránsito
+
+Se analizaron diferentes situaciones que requieren mecanismos de seguridad específicos.
+
+Se identificó que las contraseñas deben protegerse mediante funciones especializadas de hash, mientras que los datos sensibles recuperables pueden protegerse mediante cifrado.
+
+También se determinó que TLS protege las comunicaciones, el cifrado de respaldos protege las copias de seguridad y la gestión de claves permite administrar adecuadamente los secretos criptográficos.
+
+#### Conclusión
+
+La protección de la información debe realizarse mediante diferentes mecanismos complementarios, dependiendo del tipo de dato y del riesgo identificado.
+
+#### Evidencia
+
+- [Comparación de mecanismos de protección](evidencias/07-comparacion.md)
