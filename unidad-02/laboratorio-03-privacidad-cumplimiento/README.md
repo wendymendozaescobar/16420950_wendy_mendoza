@@ -340,3 +340,98 @@ El DBA puede colaborar mediante consultas, inventarios de información y control
 La actividad permitió comprender que el derecho de acceso tiene implicaciones técnicas en la administración de bases de datos.
 
 PostgreSQL facilita la localización de registros mediante consultas SQL, pero atender una solicitud de acceso requiere procedimientos adicionales para verificar la identidad del titular, identificar la información correspondiente y protegerla durante su entrega.
+
+## 8. Derecho ARCO de rectificación
+
+### Objetivo
+
+Aplicar el derecho de rectificación mediante una actualización controlada de información personal en PostgreSQL y comprender la importancia de la autorización y trazabilidad de los cambios.
+
+### Procedimiento
+
+Se consultó inicialmente la tabla `public.clientes` para identificar al cliente con `id = 1`.
+
+PostgreSQL mostró que el registro pertenecía a Ana López y que su correo electrónico era `ana.lopez@example.test`.
+
+Después se comprobó que el correo `nuevo-correo@example.com` no estuviera registrado en otro cliente. La consulta devolvió cero filas.
+
+Para realizar la rectificación, se inició una transacción con `BEGIN` y se ejecutó:
+
+```sql
+UPDATE public.clientes
+SET correo = 'nuevo-correo@example.com'
+WHERE id = 1
+  AND correo = 'ana.lopez@example.test'
+RETURNING id, nombre, correo;
+```
+
+Posteriormente, se verificó la información mediante una consulta `SELECT`.
+
+Finalmente, se confirmó la transacción utilizando `COMMIT`.
+
+### Resultado obtenido
+
+PostgreSQL devolvió `UPDATE 1`, lo que confirma que se modificó exactamente un registro.
+
+Los resultados fueron:
+
+| Campo | Resultado |
+|---|---|
+| ID del cliente | `1` |
+| Nombre | Ana López |
+| Correo anterior | `ana.lopez@example.test` |
+| Correo nuevo | `nuevo-correo@example.com` |
+| Registros actualizados | `1` |
+| Transacción | Confirmada mediante `COMMIT` |
+
+La consulta de verificación mostró que el cliente tenía registrado el nuevo correo electrónico.
+
+No se modificaron otros campos durante esta operación.
+
+### Preguntas de análisis
+
+**1. ¿Cómo podría comprobarse que el cambio fue autorizado?**
+
+La organización debería verificar la identidad del titular o de su representante autorizado y conservar evidencia de la solicitud de rectificación.
+
+También debería existir un procedimiento para registrar la autorización correspondiente antes de realizar el cambio.
+
+En este laboratorio, la actualización se efectuó como parte de un escenario académico con datos ficticios. No se implementó un procedimiento real de autorización.
+
+**2. ¿Debería registrarse quién realizó el cambio?**
+
+Sí. Es recomendable registrar la identidad del usuario o proceso que realizó la modificación, la fecha, el momento de ejecución y el registro afectado.
+
+Esta información permite identificar quién realizó una operación y facilita la investigación de modificaciones indebidas.
+
+Durante la práctica se comprobó la ejecución de la actualización, pero no se implementó un sistema de auditoría persistente.
+
+**3. ¿Por qué es importante la trazabilidad?**
+
+Porque permite reconstruir las operaciones realizadas sobre la información.
+
+En el caso de una rectificación, ayuda a identificar cuándo se modificó un dato, quién ejecutó el cambio y qué solicitud lo justificó.
+
+También facilita la detección de errores, la investigación de incidentes y la demostración de que se siguieron los procedimientos establecidos.
+
+### Análisis
+
+La actividad permitió comprobar que `UPDATE` puede utilizarse para corregir información personal almacenada en PostgreSQL.
+
+Se utilizó una transacción para controlar la operación y se agregaron condiciones específicas para evitar modificar registros distintos del cliente seleccionado.
+
+Sin embargo, una rectificación no siempre termina al actualizar una sola tabla.
+
+Durante la Actividad 2 se creó `lab03.clientes_soporte`, que contiene una copia de determinados datos de `public.clientes`.
+
+Esta copia no se actualiza automáticamente cuando cambia el correo en la tabla original. Por ello, en un entorno productivo sería necesario identificar las copias y sistemas relacionados, y establecer mecanismos para mantener la consistencia de los datos.
+
+También sería necesario implementar controles de autorización y auditoría.
+
+### Conclusión
+
+Se realizó correctamente la rectificación del correo electrónico de un cliente ficticio mediante PostgreSQL.
+
+Se comprobó que la instrucción modificó un único registro y que la transacción quedó confirmada.
+
+La actividad permitió comprender la importancia de verificar los datos antes de modificarlos y mantener mecanismos que permitan autorizar, registrar y rastrear las operaciones realizadas sobre información personal.
