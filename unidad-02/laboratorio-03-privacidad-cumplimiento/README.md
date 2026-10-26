@@ -231,3 +231,39 @@ Esta práctica permitió aplicar los principios de minimización de datos, limit
 ### Archivo SQL
 
 - [Control de acceso relacionado con la finalidad](sql/03-control-acceso.sql)
+
+## 6. Análisis de una finalidad secundaria
+
+### Objetivo
+
+Evaluar los riesgos relacionados con el uso de información personal para una finalidad distinta de aquella para la que fue recopilada.
+
+### Procedimiento
+
+Se analizó la propuesta de utilizar edad, ciudad y comportamiento de compra para enviar promociones personalizadas.
+
+Se identificaron las condiciones que deberían revisarse antes de autorizar este tratamiento, así como los datos necesarios y los controles técnicos que podrían implementarse.
+
+### Resultados
+
+Se determinó que la organización no puede asumir que cualquier uso de los datos es válido simplemente porque ya dispone de ellos.
+
+También se identificó que marketing no necesita acceso directo a toda la tabla `public.clientes`.
+
+Se propusieron mecanismos como vistas, roles, permisos, agregación de información y controles para respetar las preferencias de los titulares.
+
+### Análisis
+
+Esta actividad permitió comprender que la seguridad técnica y la autorización para tratar datos personales son cuestiones diferentes.
+
+Los controles implementados por el DBA deben responder a finalidades previamente definidas y autorizadas por las áreas responsables.
+
+### Conclusión
+
+La utilización de datos para finalidades secundarias requiere analizar su justificación, necesidad y condiciones aplicables.
+
+La información entregada a cada departamento debe limitarse a lo necesario para cumplir sus funciones autorizadas.
+
+### Evidencia
+
+- [Análisis de finalidad secundaria](evidencias/05-finalidad-secundaria.md)
