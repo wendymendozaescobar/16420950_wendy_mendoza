@@ -521,6 +521,84 @@ Durante esta actividad no se modificaron ni eliminaron roles.
 
 **Script:** [Consultas de roles](sql/02-roles.sql).
 
+### Actividad 9. Separar cuentas administrativas y de aplicación
+
+**Objetivo**
+
+Diseñar una separación de cuentas administrativas, de aplicación y de consulta que permita aplicar el principio de mínimo privilegio en PostgreSQL.
+
+**Procedimiento**
+
+Se analizaron las responsabilidades de tres tipos de cuentas y se establecieron los privilegios que deberían recibir según sus funciones.
+
+Se consideraron los roles identificados durante la Actividad 8, pero no se modificaron las cuentas existentes.
+
+**Resultados**
+
+Se propone la siguiente separación:
+
+| Cuenta | Propósito | LOGIN | Privilegios |
+|---|---|---|---|
+| DBA | Administración de PostgreSQL | Sí | Privilegios administrativos necesarios para gestionar el servidor |
+| APP | Conexión utilizada por una aplicación | Sí | Acceso únicamente a las tablas y operaciones que necesita la aplicación |
+| CONSULTA | Consulta de información autorizada | Sí | Permisos `SELECT` sobre los objetos necesarios |
+
+Las tres cuentas son conceptuales y no fueron creadas durante esta actividad.
+
+### Justificación
+
+**Cuenta DBA**
+
+Debe utilizarse exclusivamente para realizar actividades administrativas.
+
+Sus privilegios deben corresponder a las responsabilidades asignadas. No todas las tareas de administración requieren utilizar permanentemente una cuenta `SUPERUSER`.
+
+**Cuenta APP**
+
+Debe contar solamente con los permisos necesarios para realizar las operaciones de la aplicación.
+
+Por ejemplo, una aplicación de administración de clientes podría requerir permisos específicos de lectura, inserción y actualización, sin autorización para modificar la configuración del servidor.
+
+**Cuenta CONSULTA**
+
+Debe utilizarse cuando únicamente se necesita consultar información.
+
+Sus permisos deberían limitarse a `SELECT` sobre las tablas o vistas autorizadas.
+
+No debería disponer de permisos para insertar, actualizar o eliminar registros.
+
+### Pregunta de análisis
+
+**¿Qué riesgo existe si la aplicación se conecta utilizando una cuenta administrativa?**
+
+Si una aplicación utiliza una cuenta administrativa, cualquier vulnerabilidad que permita ejecutar operaciones con sus credenciales podría comprometer gravemente la seguridad de PostgreSQL.
+
+Por ejemplo, si la aplicación se conecta como `postgres`, un atacante que consiga utilizar esa conexión podría aprovechar los privilegios de superusuario para consultar o modificar información y realizar operaciones administrativas.
+
+Esto aumentaría el impacto potencial de una vulnerabilidad.
+
+Por esa razón, las aplicaciones deben utilizar cuentas específicas con privilegios limitados a sus necesidades funcionales.
+
+### Análisis
+
+La separación de cuentas permite establecer diferentes niveles de autorización según las funciones.
+
+Las tareas administrativas requieren capacidades diferentes de las operaciones normales de una aplicación.
+
+En el entorno del laboratorio, `postgres` tiene privilegios elevados y debe reservarse para las actividades que realmente los requieren.
+
+Los roles `analista` y `soporte`, configurados con `NOLOGIN`, también demuestran que PostgreSQL permite organizar privilegios sin habilitar necesariamente el inicio de sesión directo.
+
+La propuesta utiliza el principio de mínimo privilegio para reducir los posibles efectos de un acceso no autorizado.
+
+### Conclusión
+
+Se comprendió que las cuentas administrativas y las cuentas utilizadas por aplicaciones deben tener responsabilidades y privilegios diferentes.
+
+El uso de cuentas específicas permite limitar las operaciones disponibles y reducir los riesgos relacionados con privilegios excesivos.
+
+Durante esta actividad se realizó únicamente un diseño conceptual. No se crearon ni modificaron roles en PostgreSQL.
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
