@@ -206,3 +206,21 @@ Es necesario revisar el contexto de cada coincidencia para determinar si contien
 La revisión de secretos antes de publicar cambios en Git ayuda a reducir el riesgo de divulgar credenciales.
 
 Sin embargo, una búsqueda de texto no sustituye herramientas especializadas de detección de secretos ni una política adecuada de gestión de claves.
+
+### Actividad 10. Política mínima de protección de claves
+
+Se elaboró una política de seguridad compuesta por ocho reglas para administrar claves criptográficas durante su ciclo de vida.
+
+La política contempla la generación segura, el almacenamiento protegido, el control de acceso, la rotación, los respaldos, la revocación, la respuesta ante exposiciones accidentales y la eliminación segura.
+
+#### Resultados
+
+Se establecieron procedimientos para reducir el riesgo de exposición y pérdida de claves, considerando también la necesidad de mantener disponibles los datos cifrados.
+
+#### Conclusión
+
+La seguridad de la información cifrada depende tanto del algoritmo criptográfico utilizado como de la correcta administración de sus claves.
+
+#### Evidencia
+
+- [Política de protección de claves](evidencias/10-politica-claves.md)
