@@ -156,3 +156,19 @@ La protección de la información debe realizarse mediante diferentes mecanismos
 #### Evidencia
 
 - [Comparación de mecanismos de protección](evidencias/07-comparacion.md)
+
+### Actividad 8. Análisis de un escenario de seguridad
+
+Se analizó el escenario de una empresa que presentaba problemas de seguridad relacionados con credenciales, información personal, comunicaciones, claves criptográficas y respaldos.
+
+Se identificaron los riesgos principales y se propusieron mecanismos como hash de contraseñas, cifrado, TLS, gestión de claves y protección de respaldos.
+
+#### Resultados
+
+Se comprobó mediante el análisis que la configuración adecuada de usuarios y permisos no elimina todos los riesgos de seguridad.
+
+La protección de una base de datos requiere diferentes mecanismos complementarios.
+
+#### Evidencia
+
+- [Análisis del escenario de seguridad](evidencias/08-analisis-escenario.md)
