@@ -172,3 +172,37 @@ La protección de una base de datos requiere diferentes mecanismos complementari
 #### Evidencia
 
 - [Análisis del escenario de seguridad](evidencias/08-analisis-escenario.md)
+
+### Actividad 9. Verificación de secretos antes de Git
+
+#### Objetivo
+
+Identificar posibles contraseñas, tokens y claves criptográficas expuestos en los archivos del repositorio.
+
+#### Procedimiento
+
+Se utilizó el comando `grep` para buscar palabras y patrones relacionados con posibles secretos dentro de los archivos del proyecto.
+
+Se revisaron las coincidencias para distinguir entre valores ficticios utilizados en las prácticas y posibles credenciales reales.
+
+#### Resultados
+
+La primera búsqueda encontró coincidencias relacionadas con contraseñas, tokens y claves dentro de los archivos de los laboratorios.
+
+Después de revisar los resultados, se identificó que correspondían a documentación académica, nombres de columnas SQL y valores ficticios utilizados durante las prácticas, como `Password123` y `CLAVE-DE-PRUEBA`.
+
+La segunda búsqueda, enfocada en patrones como `password=`, `secret=`, `api_key=` y `postgresql://`, no devolvió coincidencias.
+
+**Conclusión de la revisión:** No se identificaron credenciales reales en los resultados observados. Sin embargo, estas búsquedas no garantizan detectar todos los secretos que podrían existir en un repositorio.
+
+#### Análisis
+
+La presencia de palabras relacionadas con contraseñas o claves no significa necesariamente que exista un secreto expuesto.
+
+Es necesario revisar el contexto de cada coincidencia para determinar si contiene información sensible auténtica.
+
+#### Conclusión
+
+La revisión de secretos antes de publicar cambios en Git ayuda a reducir el riesgo de divulgar credenciales.
+
+Sin embargo, una búsqueda de texto no sustituye herramientas especializadas de detección de secretos ni una política adecuada de gestión de claves.
