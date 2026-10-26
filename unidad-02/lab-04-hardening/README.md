@@ -116,6 +116,62 @@ No se realizaron modificaciones en el servidor.
 
 **Script utilizado:** [01-inspeccion.sql](sql/01-inspeccion.sql).
 
+### Actividad 3. Revisar `listen_addresses`
+
+**Objetivo**
+
+Analizar las interfaces de red en las que PostgreSQL acepta conexiones y determinar si la configuración actual limita adecuadamente la exposición del servidor.
+
+**Procedimiento**
+
+Se consultó el parámetro `listen_addresses` mediante la instrucción:
+
+```sql
+SHOW listen_addresses;
+```
+
+Posteriormente, se identificaron las interfaces necesarias para el laboratorio y se compararon las dos arquitecturas de red propuestas.
+
+**Resultados**
+
+| Elemento | Resultado |
+|---|---|
+| Configuración encontrada | `localhost` |
+| Puerto PostgreSQL | `5433` |
+| Tipo de acceso TCP configurado | Local |
+| Interfaces necesarias | Interfaces locales de loopback |
+| Interfaces innecesarias | Interfaces externas, debido a que las prácticas actuales no requieren acceso remoto |
+
+**Análisis**
+
+El parámetro `listen_addresses` determina en qué direcciones de red PostgreSQL puede aceptar conexiones TCP.
+
+En nuestro entorno se obtuvo el valor `localhost`, lo que significa que PostgreSQL está configurado para escuchar únicamente en las interfaces locales.
+
+Esta configuración resulta adecuada para las prácticas realizadas porque no necesitamos establecer conexiones desde otros equipos.
+
+No se identificó la necesidad de habilitar interfaces adicionales.
+
+**Comparación de arquitecturas**
+
+La primera arquitectura presenta un servidor PostgreSQL conectado mediante un firewall a Internet. Si el firewall permite conexiones externas hacia el puerto correspondiente, el servidor podría quedar expuesto a intentos de conexión desde redes no autorizadas.
+
+La segunda arquitectura sitúa PostgreSQL en una red privada y contempla restricciones que impiden su acceso directo desde Internet.
+
+La segunda opción reduce mejor la exposición cuando las reglas de red limitan efectivamente las conexiones a los orígenes autorizados.
+
+Sin embargo, utilizar una red privada no sustituye las medidas de autenticación, autorización y seguridad del sistema operativo.
+
+**Conclusión**
+
+Se comprobó que PostgreSQL utiliza `listen_addresses = 'localhost'`, una configuración adecuada para nuestro laboratorio local.
+
+No fue necesario modificar el parámetro porque las actividades actuales no requieren conexiones remotas.
+
+También se comprendió que restringir las interfaces de escucha contribuye a reducir la superficie de ataque.
+
+**Evidencia:** [Revisión de listen_addresses](evidencias/02-listen-addresses.png).
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
