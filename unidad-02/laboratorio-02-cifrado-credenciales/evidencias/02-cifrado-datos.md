@@ -1,5 +1,28 @@
 # Actividad 2. Cifrado de información sensible
 
+## Objetivo
+
+Proteger información sensible almacenada en PostgreSQL
+mediante cifrado simétrico y comprobar que únicamente
+puede recuperarse utilizando la clave correcta.
+
+## Procedimiento
+
+Primero se creó la tabla `lab02.clientes_protegidos`
+para almacenar el nombre de un cliente y su RFC cifrado.
+
+Después se utilizó la función `pgp_sym_encrypt()`
+para cifrar un RFC ficticio antes de almacenarlo.
+
+Posteriormente se utilizó `pgp_sym_decrypt()` para
+recuperar el dato original mediante la clave correcta.
+
+Finalmente, se repitió la operación con una clave
+incorrecta para observar el comportamiento de PostgreSQL.
+
+Los comandos utilizados se encuentran en
+`../sql/02-cifrado-datos.sql`.
+
 ## 8.1 Cifrado de datos
 
 Se creó la tabla `lab02.clientes_protegidos` para almacenar el nombre y el RFC cifrado de un cliente.
@@ -41,3 +64,22 @@ La clave podría quedar expuesta en el historial de comandos, registros del sist
 El cifrado simétrico permite proteger información que necesitamos recuperar posteriormente.
 
 Sin embargo, su seguridad también depende de proteger adecuadamente las claves. En una aplicación real no deberíamos escribir claves secretas directamente en las consultas ni publicarlas en repositorios.
+
+## Conclusión
+
+Se comprobó que el cifrado simétrico permite proteger
+información sensible y recuperarla cuando se dispone
+de la clave correcta.
+
+Durante la práctica logramos recuperar el RFC ficticio
+que habíamos cifrado. También observamos que PostgreSQL
+mostró un error cuando intentamos descifrarlo utilizando
+una clave incorrecta.
+
+Aprendimos que el cifrado no sustituye los controles
+de acceso y que las claves criptográficas deben
+protegerse adecuadamente.
+
+En un entorno real utilizaríamos mecanismos seguros
+para administrar las claves, evitando incluirlas
+directamente en los scripts SQL.

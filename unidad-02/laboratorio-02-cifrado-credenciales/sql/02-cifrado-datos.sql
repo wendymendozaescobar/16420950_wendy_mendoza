@@ -1,6 +1,16 @@
 -- LAB-02: Cifrado, credenciales y comunicaciones seguras
 -- Actividad 2: Cifrado de información sensible
 
+-- Esquema utilizado para aislar las tablas de este laboratorio.
+CREATE SCHEMA IF NOT EXISTS lab02;
+
+SET search_path TO lab02, public;
+
+-- Requiere la extension pgcrypto para usar pgp_sym_encrypt()
+-- y pgp_sym_decrypt().
+-- Ejecutar el archivo completo en una base de prueba limpia.
+-- Los valores utilizados en este laboratorio son ficticios.
+
 -- 8.1 Crear una tabla para almacenar datos cifrados.
 
 CREATE TABLE clientes_protegidos (

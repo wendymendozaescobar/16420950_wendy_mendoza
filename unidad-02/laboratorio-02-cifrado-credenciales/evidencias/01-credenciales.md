@@ -1,5 +1,29 @@
 # Actividad 1. Protección de credenciales
 
+## Objetivo
+
+Identificar los riesgos de almacenar contraseñas en texto plano
+y comprobar cómo protegerlas mediante funciones de hash
+en PostgreSQL.
+
+## Procedimiento
+
+Primero se creó una tabla llamada `usuarios_insegura`
+y se almacenó una contraseña ficticia en texto plano.
+
+Después se utilizó `crypt()` junto con `gen_salt('bf')`
+para generar hashes y comprobar que una misma contraseña
+puede producir resultados diferentes.
+
+Posteriormente se creó la tabla `usuarios_segura`,
+donde se almacenó el hash de la contraseña.
+
+Finalmente, se realizaron dos pruebas de autenticación:
+una con la contraseña correcta y otra con una incorrecta.
+
+Los comandos utilizados se encuentran en
+`../sql/01-credenciales.sql`.
+
 ## Almacenamiento inseguro de contraseñas
 
 Se creó la tabla `lab02.usuarios_insegura` y se insertó
@@ -126,3 +150,19 @@ Porque el cifrado es reversible cuando se dispone
 de la clave correspondiente. En cambio, un hash
 de contraseña no está diseñado para recuperar
 el texto original.
+
+## Conclusión
+
+Se comprobó que almacenar contraseñas en texto plano
+representa un riesgo porque cualquier persona con acceso
+de lectura a la tabla podría conocerlas.
+
+Mediante `crypt()` y `gen_salt()` logramos almacenar
+una representación protegida de la contraseña.
+
+También comprobamos que es posible verificar una contraseña
+sin necesidad de recuperar su valor original.
+
+En una aplicación real utilizaría mecanismos especializados
+de hash de contraseñas y controles de acceso adecuados
+para proteger las credenciales de los usuarios.

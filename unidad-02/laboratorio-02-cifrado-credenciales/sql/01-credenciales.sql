@@ -1,6 +1,14 @@
 -- LAB-02: Cifrado, credenciales y comunicaciones seguras
 -- Actividad 1: Protección de credenciales
 
+-- Esquema utilizado para aislar las tablas de este laboratorio.
+CREATE SCHEMA IF NOT EXISTS lab02;
+
+SET search_path TO lab02, public;
+
+-- Este script contiene datos ficticios y operaciones de creacion.
+-- Su ejecucion completa esta prevista para una base de prueba limpia.
+
 -- 1. Crear una tabla que almacena contraseñas en texto plano.
 
 CREATE TABLE usuarios_insegura (
