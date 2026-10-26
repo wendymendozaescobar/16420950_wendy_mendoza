@@ -836,3 +836,45 @@ El DBA debe colaborar en la identificación de riesgos y en la implementación d
 ### Evidencia
 
 - [Matriz de evaluación integral de privacidad](evidencias/14-evaluacion-integral.md)
+
+## 16. Propuesta de arquitectura de datos protegidos
+
+### Objetivo
+
+Diseñar una arquitectura conceptual que permita separar la información de una organización según su finalidad e incorporar mecanismos de privacidad, seguridad y gobierno de datos.
+
+### Procedimiento
+
+Se analizaron los requisitos de operación, analítica y auditoría presentados en el escenario del laboratorio.
+
+Se propuso una arquitectura que distingue estas tres áreas y establece controles para acceso, minimización, protección de información sensible, retención, trazabilidad, eliminación y atención de solicitudes.
+
+La propuesta tomó como referencia los mecanismos estudiados durante los tres laboratorios.
+
+### Resultados
+
+Se elaboró una arquitectura conceptual organizada en tres áreas principales:
+
+- Operación, destinada a los procesos de atención al cliente y facturación.
+- Analítica, orientada a estadísticas y resultados agregados.
+- Auditoría, propuesta para registrar y revisar operaciones relevantes.
+
+También se identificaron controles técnicos y administrativos necesarios para proteger la información durante su ciclo de vida.
+
+### Análisis
+
+La separación de datos por finalidad permite reducir la exposición innecesaria y relacionar los permisos con las funciones de cada departamento.
+
+Los controles técnicos de PostgreSQL deben complementarse con políticas de retención, procedimientos para derechos ARCO y responsabilidades organizacionales.
+
+La arquitectura presentada es conceptual. No todos sus componentes fueron implementados físicamente durante el laboratorio.
+
+### Conclusión
+
+La actividad permitió integrar los conocimientos adquiridos sobre privacidad, seguridad y gobierno de datos.
+
+Se comprendió que una arquitectura protegida requiere considerar tanto los mecanismos técnicos como las finalidades y responsabilidades relacionadas con la información.
+
+### Evidencia
+
+- [Propuesta de arquitectura de datos protegidos](evidencias/15-arquitectura.md)
