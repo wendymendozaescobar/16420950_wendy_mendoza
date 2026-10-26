@@ -28,3 +28,13 @@ SHOW data_directory;
 SHOW log_directory;
 SHOW log_connections;
 SHOW log_disconnections;
+
+-- Actividad 4: Revisar reglas de autenticación
+
+SELECT
+    type,
+    database,
+    user_name,
+    address,
+    auth_method
+FROM pg_hba_file_rules;

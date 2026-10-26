@@ -172,6 +172,58 @@ También se comprendió que restringir las interfaces de escucha contribuye a re
 
 **Evidencia:** [Revisión de listen_addresses](evidencias/02-listen-addresses.png).
 
+### Actividad 4. Revisar `pg_hba.conf`
+
+**Objetivo**
+
+Analizar las reglas de autenticación configuradas en PostgreSQL e identificar posibles accesos excesivamente permisivos.
+
+**Procedimiento**
+
+Se consultó la vista `pg_hba_file_rules` para identificar los tipos de conexión, bases de datos, usuarios, direcciones de origen y métodos de autenticación configurados.
+
+**Resultados**
+
+Se encontraron siete reglas:
+
+| Tipo | Base de datos | Usuario | Dirección | Método |
+|---|---|---|---|---|
+| `local` | Todas | `postgres` | Local | `peer` |
+| `local` | Todas | Todos | Local | `peer` |
+| `host` | Todas | Todos | `127.0.0.1` | `scram-sha-256` |
+| `host` | Todas | Todos | `::1` | `scram-sha-256` |
+| `local` | Replicación | Todos | Local | `peer` |
+| `host` | Replicación | Todos | `127.0.0.1` | `scram-sha-256` |
+| `host` | Replicación | Todos | `::1` | `scram-sha-256` |
+
+**Análisis**
+
+Las conexiones mediante sockets Unix utilizan el método `peer`, mientras que las conexiones TCP configuradas utilizan `scram-sha-256`.
+
+Las direcciones identificadas corresponden a las interfaces locales IPv4 e IPv6.
+
+No se encontraron reglas con los rangos `0.0.0.0/0` o `::/0`, que permitirían considerar orígenes de red mucho más amplios.
+
+Sin embargo, algunas reglas utilizan `all` para bases de datos y usuarios, por lo que sería conveniente evaluar si cada aplicación requiere ese alcance.
+
+El servidor también tiene configurado `listen_addresses = 'localhost'`, lo que contribuye a limitar su exposición TCP a conexiones locales.
+
+La inspección no identificó una necesidad inmediata de modificar las reglas. Antes de cualquier cambio deben analizarse las conexiones necesarias y prepararse mecanismos para conservar el acceso administrativo.
+
+**Conclusión**
+
+Se identificaron las reglas de autenticación de PostgreSQL y se distinguieron los métodos `peer` y `scram-sha-256`.
+
+No se observaron reglas que contemplen cualquier dirección de Internet como origen.
+
+La actividad permitió comprender que la seguridad de las conexiones depende tanto de las interfaces disponibles como de las reglas de autenticación.
+
+No se modificó la configuración de PostgreSQL.
+
+**Evidencia:** [Reglas de autenticación](evidencias/03-pg-hba.png).
+
+**Script:** [Consultas de inspección](sql/01-inspeccion.sql).
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
