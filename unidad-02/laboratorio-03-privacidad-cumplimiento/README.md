@@ -793,3 +793,46 @@ Una organización necesita establecer políticas y responsabilidades claras, ade
 
 El DBA participa principalmente en la implementación y mantenimiento de los controles técnicos, pero debe trabajar de manera coordinada con las áreas responsables de privacidad, seguridad y cumplimiento.
 
+## 15. Evaluación integral de privacidad
+
+### Objetivo
+
+Identificar los principales riesgos de privacidad y gobierno de datos en una organización que administra información de 50,000 clientes.
+
+### Procedimiento
+
+Se analizó el escenario presentado en el laboratorio y se elaboró una matriz de doce problemas o riesgos.
+
+Para cada situación se identificó el principio de privacidad afectado, las posibles consecuencias y los controles propuestos.
+
+### Resultados
+
+Se identificaron riesgos relacionados con:
+
+- Acceso excesivo a información personal.
+- Falta de minimización para actividades de analítica.
+- Consulta innecesaria de identificadores personales.
+- Conservación de información sin una política documentada.
+- Uso de datos reales en ambientes de desarrollo.
+- Tratamientos secundarios que requieren evaluación.
+- Falta de documentación sobre las finalidades de los datos.
+
+Se propusieron controles como vistas, roles, permisos, estadísticas agregadas, bases de prueba con datos sintéticos y políticas de retención.
+
+### Análisis
+
+Los riesgos encontrados muestran que proteger una base de datos requiere algo más que implementar mecanismos técnicos.
+
+También deben existir políticas que determinen qué información puede utilizar cada departamento y bajo qué condiciones.
+
+La ausencia de documentación sobre finalidades y retención dificulta justificar el tratamiento de los datos personales.
+
+### Conclusión
+
+Se comprendió que la privacidad debe abordarse de manera integral, considerando los accesos, las finalidades, los ambientes de desarrollo y el ciclo de vida de la información.
+
+El DBA debe colaborar en la identificación de riesgos y en la implementación de controles técnicos, trabajando con las áreas responsables de privacidad y cumplimiento.
+
+### Evidencia
+
+- [Matriz de evaluación integral de privacidad](evidencias/14-evaluacion-integral.md)
