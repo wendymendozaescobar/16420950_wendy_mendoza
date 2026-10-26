@@ -60,7 +60,61 @@ Por lo tanto, no sería correcto modificar estos parámetros sin identificar pri
 
 ## Hallazgos
 
-Pendiente de completar conforme avancen las actividades.
+### Actividad 2. Identificar los archivos de configuración
+
+**Objetivo**
+
+Identificar la ubicación física de los archivos de configuración, autenticación, datos y registros de PostgreSQL.
+
+**Procedimiento**
+
+Se utilizaron consultas `SHOW` para identificar las rutas y parámetros de configuración del servidor PostgreSQL 18.6.
+
+**Resultados**
+
+| Parámetro | Valor |
+|---|---|
+| `config_file` | `/etc/postgresql/18/main/postgresql.conf` |
+| `hba_file` | `/etc/postgresql/18/main/pg_hba.conf` |
+| `ident_file` | `/etc/postgresql/18/main/pg_ident.conf` |
+| `data_directory` | `/var/lib/postgresql/18/main` |
+| `log_directory` | `log` |
+| `log_connections` | Cadena vacía (`''`) |
+| `log_disconnections` | `off` |
+
+**Análisis**
+
+Se identificó que los archivos principales de configuración se encuentran en `/etc/postgresql/18/main/`, mientras que los datos se almacenan en `/var/lib/postgresql/18/main`.
+
+Esto permite distinguir entre los archivos que controlan el funcionamiento del servidor y aquellos que almacenan físicamente la información de las bases de datos.
+
+También se observó que `log_connections` está configurado con una cadena vacía y `log_disconnections` está desactivado.
+
+En PostgreSQL 18, una cadena vacía en `log_connections` indica que no está habilitado el registro configurable de las etapas de conexión.
+
+El parámetro `log_directory` utiliza el valor relativo `log`, pero todavía no se ha comprobado cuál es el destino efectivo de los registros.
+
+**¿Por qué es importante conocer la ubicación física de estos archivos?**
+
+Porque permite identificar qué archivos deben protegerse, respaldarse y administrarse durante el mantenimiento del servidor.
+
+También facilita revisar los permisos del sistema operativo y localizar configuraciones que podrían representar riesgos de seguridad.
+
+Por ejemplo, si usuarios no autorizados pudieran modificar `pg_hba.conf`, podrían alterar las reglas de autenticación del servidor.
+
+Asimismo, proteger el directorio de datos es fundamental porque contiene la información física administrada por PostgreSQL.
+
+Conocer estas ubicaciones permite aplicar medidas de seguridad adecuadas sin modificar archivos incorrectos ni afectar innecesariamente el funcionamiento del servidor.
+
+**Conclusión**
+
+Se identificaron correctamente los principales archivos y directorios utilizados por PostgreSQL 18.6.
+
+La actividad permitió comprender la diferencia entre configuración, autenticación, almacenamiento y registros.
+
+No se realizaron modificaciones en el servidor.
+
+**Script utilizado:** [01-inspeccion.sql](sql/01-inspeccion.sql).
 
 ## Cambios realizados
 
