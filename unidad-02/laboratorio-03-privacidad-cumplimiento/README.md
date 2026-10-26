@@ -139,3 +139,95 @@ En un entorno productivo sería recomendable implementar vistas y controles de a
 ### Archivo SQL
 
 - [Consultas de separación por finalidad](sql/02-finalidad.sql)
+
+## 5. Control de acceso relacionado con la finalidad
+
+### Objetivo
+
+Aplicar controles de acceso en PostgreSQL para permitir que el departamento de analítica consulte únicamente la información necesaria para sus funciones.
+
+### Procedimiento
+
+Se comprobó que el rol `analista` ya existía porque había sido creado durante el LAB-01.
+
+Para evitar modificar las actividades anteriores, se reutilizó el rol y se creó una nueva vista llamada `lab03.v_analitica_clientes`.
+
+La vista contiene únicamente la ciudad y el rango de edad de los clientes.
+
+Posteriormente, se otorgaron los permisos `USAGE` sobre el esquema `lab03` y `SELECT` sobre la vista.
+
+Finalmente, se comprobaron los privilegios y se utilizó `SET ROLE analista` para verificar que el rol pudiera ejecutar la consulta.
+
+### Resultados obtenidos
+
+Al consultar los permisos asignados, PostgreSQL mostró que el rol `analista` tenía acceso de lectura a:
+
+- `analitica.clientes`, correspondiente al LAB-01.
+- `lab03.v_analitica_clientes`, correspondiente al LAB-03.
+
+La consulta con `has_table_privilege()` devolvió los siguientes resultados:
+
+| Verificación | Resultado |
+|---|---|
+| Consultar `lab03.v_analitica_clientes` | `t` |
+| Consultar `public.clientes` | `f` |
+
+También se ejecutó correctamente una consulta sobre la nueva vista utilizando el rol `analista`.
+
+La consulta devolvió cinco registros que contenían únicamente las columnas `ciudad` y `rango_edad`.
+
+### Preguntas de análisis
+
+**1. ¿Qué información puede consultar el rol?**
+
+En el LAB-03, el rol puede consultar la ciudad y el rango de edad mediante la vista `lab03.v_analitica_clientes`.
+
+Además, conserva el acceso de lectura que recibió durante el LAB-01 sobre `analitica.clientes`, que contiene información preparada para análisis mediante tokens y otros atributos.
+
+**2. ¿Puede consultar directamente `clientes`?**
+
+No puede consultar directamente la tabla original `public.clientes`.
+
+Esto se comprobó mediante `has_table_privilege()`, que devolvió `f` para el permiso `SELECT` sobre dicha tabla.
+
+**3. ¿Puede obtener nombre, correo y RFC?**
+
+No mediante los objetos a los que comprobamos que tiene acceso.
+
+La vista creada para este laboratorio únicamente presenta ciudad y rango de edad.
+
+La tabla `analitica.clientes` del LAB-01 tampoco contiene esas columnas identificadoras originales.
+
+**4. ¿Qué principio de privacidad estás aplicando?**
+
+El principio de minimización de datos, junto con la limitación de finalidad.
+
+Se proporciona al departamento de analítica información relacionada con sus funciones, evitando entregarle automáticamente otros datos personales.
+
+**5. ¿Qué principio de seguridad estás aplicando?**
+
+El principio de mínimo privilegio.
+
+Consiste en otorgar a un usuario o rol únicamente los permisos necesarios para realizar sus actividades.
+
+### Análisis
+
+Esta actividad permitió comprobar que una vista puede utilizarse para limitar las columnas disponibles para un departamento.
+
+También se observó que los permisos deben configurarse tanto sobre el esquema como sobre los objetos que se desea consultar.
+
+La reutilización del rol `analista` permitió conservar los permisos del LAB-01 y agregar únicamente el acceso necesario para este laboratorio.
+
+Sin embargo, una vista que muestra ciudad y rango de edad por cada cliente no garantiza anonimato. En un entorno productivo también sería necesario evaluar el riesgo de identificación indirecta y considerar resultados agregados.
+
+### Conclusión
+
+Se comprobó que PostgreSQL permite relacionar los permisos con las responsabilidades de cada departamento.
+
+El rol `analista` pudo consultar la vista autorizada, pero no tenía permiso de lectura sobre la tabla original `public.clientes`.
+
+Esta práctica permitió aplicar los principios de minimización de datos, limitación de finalidad y mínimo privilegio.
+
+### Archivo SQL
+
+- [Control de acceso relacionado con la finalidad](sql/03-control-acceso.sql)
