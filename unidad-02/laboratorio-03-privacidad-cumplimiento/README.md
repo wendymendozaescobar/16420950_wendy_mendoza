@@ -435,3 +435,43 @@ Se realizó correctamente la rectificación del correo electrónico de un client
 Se comprobó que la instrucción modificó un único registro y que la transacción quedó confirmada.
 
 La actividad permitió comprender la importancia de verificar los datos antes de modificarlos y mantener mecanismos que permitan autorizar, registrar y rastrear las operaciones realizadas sobre información personal.
+
+## 9. Derecho ARCO de cancelación y ciclo de vida
+
+### Objetivo
+
+Analizar las implicaciones técnicas de una solicitud de cancelación de datos personales y comprender por qué la eliminación de un registro no garantiza la desaparición de todas sus copias.
+
+### Procedimiento
+
+Se identificaron las estructuras de datos utilizadas durante los laboratorios y se analizaron otras posibles ubicaciones de información personal.
+
+Se construyó un mapa que contempla tablas relacionadas, respaldos, réplicas, reportes, exportaciones, registros de auditoría y sistemas externos.
+
+No se ejecutaron instrucciones de eliminación.
+
+### Resultados
+
+Se identificó que durante los laboratorios se crearon diferentes estructuras que contienen o relacionan información de clientes.
+
+Entre ellas se encuentran `public.clientes`, `lab03.clientes_soporte`, `analitica.clientes` y `pii.mapa_cliente`.
+
+También se identificaron otros componentes que deberían investigarse antes de atender técnicamente una solicitud de cancelación.
+
+### Análisis
+
+Eliminar un registro de una tabla no garantiza que desaparezcan las copias almacenadas en otras estructuras o sistemas.
+
+Por ello, es necesario identificar las ubicaciones de la información y determinar qué operaciones deben realizarse conforme a las decisiones autorizadas.
+
+Los periodos de conservación y las obligaciones aplicables también deben considerarse antes de eliminar información.
+
+### Conclusión
+
+La cancelación de datos personales requiere analizar su ciclo de vida completo.
+
+El DBA debe identificar dependencias y copias de información, colaborar con las áreas responsables e implementar los controles técnicos correspondientes.
+
+### Evidencia
+
+- [Derecho de cancelación y ciclo de vida](evidencias/08-ciclo-vida.md)
