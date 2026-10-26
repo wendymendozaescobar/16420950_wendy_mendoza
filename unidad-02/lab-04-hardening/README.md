@@ -917,6 +917,66 @@ Ambos mecanismos deben trabajar conjuntamente para reducir la superficie de ataq
 
 No se modificó la configuración del firewall ni del servidor.
 
+### Actividad 15. Revisar TLS
+
+**Objetivo**
+
+Verificar la configuración TLS de PostgreSQL y comprobar si las conexiones establecidas utilizan cifrado durante la comunicación.
+
+**Procedimiento**
+
+Se consultaron los parámetros `ssl` y `ssl_min_protocol_version`.
+
+Posteriormente, se utilizó `pg_stat_ssl` para verificar el estado de cifrado de una conexión local mediante socket Unix.
+
+Finalmente, se estableció una conexión TCP hacia `127.0.0.1:5433`, utilizando la cuenta `lab02_tls` y exigiendo TLS mediante `sslmode=require`.
+
+Se comprobó la conexión utilizando `\conninfo` y la vista `pg_stat_ssl`.
+
+**Resultados**
+
+| Elemento | Resultado |
+|---|---|
+| TLS habilitado | `on` |
+| Versión mínima configurada | `TLSv1.2` |
+| Usuario de prueba | `lab02_tls` |
+| Dirección del cliente | `127.0.0.1` |
+| Puerto | `5433` |
+| Conexión mediante socket Unix | No utiliza TLS |
+| Conexión TCP con `sslmode=require` | Utiliza TLS |
+| Versión negociada | `TLSv1.3` |
+| Algoritmo de cifrado | `TLS_AES_256_GCM_SHA384` |
+
+### Análisis
+
+La primera comprobación se realizó mediante una conexión local utilizando un socket Unix.
+
+En esa sesión, `pg_stat_ssl` devolvió `ssl = false`, debido a que no se estaba utilizando una conexión TCP cifrada.
+
+Posteriormente, se estableció una conexión TCP local con la cuenta `lab02_tls` y el parámetro `sslmode=require`.
+
+La conexión fue exitosa y permitió confirmar que PostgreSQL negoció TLS 1.3 con el algoritmo `TLS_AES_256_GCM_SHA384`.
+
+Esto demuestra que tener TLS habilitado en el servidor y utilizar TLS en una conexión específica son condiciones diferentes.
+
+También se comprobó que la cuenta utilizada para la prueba no dispone de privilegios de superusuario.
+
+El parámetro `sslmode=require` exige una conexión cifrada, pero no garantiza por sí solo una verificación completa de la identidad del servidor mediante certificados de confianza.
+
+### Conclusión
+
+Se verificó que PostgreSQL tiene habilitado TLS y admite conexiones cifradas.
+
+La prueba TCP permitió comprobar el uso efectivo de TLS 1.3.
+
+La actividad permitió distinguir entre la configuración de seguridad del servidor y las propiedades de una conexión específica.
+
+No fue necesario modificar certificados, usuarios ni parámetros de PostgreSQL.
+
+**Evidencia:** [Verificación de TLS](evidencias/05-tls.png).
+
+**Script utilizado:** [03-configuracion.sql](sql/03-configuracion.sql).
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
