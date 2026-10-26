@@ -328,6 +328,54 @@ Una configuración segura debe considerar conjuntamente la base de datos, el usu
 
 Durante esta actividad no se modificó `pg_hba.conf`.
 
+### Actividad 6. Aplicar mínimo privilegio a las conexiones
+
+**Objetivo**
+
+Diseñar una regla de autenticación que limite las conexiones a PostgreSQL de acuerdo con la base de datos, el usuario, el origen y el método de autenticación necesarios.
+
+**Procedimiento**
+
+Se revisaron las características del entorno local identificadas durante las actividades anteriores.
+
+Se consideraron la base de datos `laboratorios_unidad2`, las interfaces locales y el método de autenticación `scram-sha-256`.
+
+Posteriormente, se elaboró una propuesta de regla específica.
+
+**Regla propuesta**
+
+```text
+host    laboratorios_unidad2    usuario_app    127.0.0.1/32    scram-sha-256
+```
+
+**Justificación**
+
+| Elemento | Valor propuesto | Justificación |
+|---|---|---|
+| Tipo | `host` | Permite definir una regla para conexiones TCP. |
+| Base de datos | `laboratorios_unidad2` | Limita la regla a la base de datos utilizada para las prácticas. |
+| Usuario | `usuario_app` | Representa una cuenta específica destinada a una aplicación. |
+| Origen | `127.0.0.1/32` | Restringe el origen a una sola dirección IPv4 local. |
+| Autenticación | `scram-sha-256` | Utiliza un mecanismo seguro de autenticación mediante contraseña. |
+
+**Análisis**
+
+La regla propuesta aplica el principio de mínimo privilegio porque evita utilizar `all` para bases de datos y usuarios, así como rangos de red excesivamente amplios.
+
+Se identificó que el servidor del laboratorio ya utiliza `listen_addresses = 'localhost'` y reglas de autenticación para direcciones locales.
+
+La cuenta `usuario_app` es conceptual y debería crearse únicamente si una aplicación real necesitara conectarse.
+
+Antes de aplicar esta regla sería necesario verificar las necesidades de conexión y asegurar que los cambios no afecten el acceso administrativo.
+
+**Conclusión**
+
+Se comprendió que una regla de autenticación debe ser tan específica como resulte razonablemente posible.
+
+Restringir la base de datos, el usuario, el origen y el método de autenticación contribuye a reducir la superficie de ataque.
+
+La actividad consistió en diseñar una regla conceptual. No se modificó `pg_hba.conf` ni se crearon nuevos usuarios.
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
