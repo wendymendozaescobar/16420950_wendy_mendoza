@@ -977,6 +977,113 @@ No fue necesario modificar certificados, usuarios ni parámetros de PostgreSQL.
 
 **Script utilizado:** [03-configuracion.sql](sql/03-configuracion.sql).
 
+### Actividad 18. Caso integral de hardening
+
+**Objetivo**
+
+Identificar riesgos de seguridad en un servidor PostgreSQL con configuraciones excesivamente permisivas y proponer controles que reduzcan su superficie de ataque.
+
+**Procedimiento**
+
+Se analizó el escenario proporcionado, en el que un servidor PostgreSQL escucha en todas las interfaces, permite conexiones desde cualquier origen IPv4 y es utilizado por una aplicación con una cuenta administrativa.
+
+Se identificaron diez problemas o riesgos relacionados con la red, la autenticación, la autorización y la configuración del servidor.
+
+### Resultados
+
+| # | Problema | Riesgo | Control propuesto |
+|---|---|---|---|
+| 1 | PostgreSQL escucha en todas las interfaces. | El servicio puede quedar accesible desde interfaces que no necesitan utilizarlo. | Configurar `listen_addresses` únicamente con las direcciones necesarias. |
+| 2 | El firewall permite el puerto `5432` desde cualquier origen. | Equipos no autorizados pueden intentar establecer conexiones con el servicio. | Aplicar una lista de redes autorizadas y denegar los demás orígenes. |
+| 3 | `pg_hba.conf` contempla cualquier dirección IPv4 mediante `0.0.0.0/0`. | Las reglas de autenticación no restringen los intentos por dirección de origen. | Sustituir la regla amplia por reglas específicas para los orígenes necesarios. |
+| 4 | `pg_hba.conf` utiliza `all` para las bases de datos. | La misma regla de autenticación contempla bases de datos que una aplicación podría no necesitar. | Especificar las bases de datos a las que cada cuenta debe conectarse. |
+| 5 | `pg_hba.conf` utiliza `all` para los usuarios. | La regla no diferencia las cuentas que realmente necesitan acceso. | Restringir las reglas a usuarios específicos y autorizados. |
+| 6 | La aplicación utiliza una cuenta con privilegios administrativos. | Si la aplicación es comprometida, podrían utilizarse capacidades administrativas del servidor. | Crear una cuenta específica para la aplicación con privilegios limitados. |
+| 7 | La cuenta de aplicación dispone de privilegios superiores a sus necesidades habituales. | Una operación no autorizada podría afectar más objetos o información de la necesaria. | Aplicar mínimo privilegio mediante roles y permisos específicos. |
+| 8 | No existe una separación efectiva entre la cuenta administrativa utilizada por la aplicación y las funciones administrativas. | Las credenciales utilizadas por el software también proporcionan capacidades administrativas. | Separar las identidades de DBA, aplicación y consulta. |
+| 9 | El administrador considera suficientes las contraseñas fuertes. | Se pueden ignorar riesgos de configuración, autorización y exposición de red. | Aplicar seguridad por capas y verificar los controles de manera independiente. |
+| 10 | Varias capas permiten un alcance de conexión excesivamente amplio al mismo tiempo. | La combinación de escucha en todas las interfaces, firewall abierto y reglas amplias incrementa la superficie de ataque. | Establecer restricciones complementarias en `listen_addresses`, firewall y `pg_hba.conf`. |
+
+Los problemas 6, 7 y 8 están relacionados con la misma configuración, pero representan riesgos diferentes: uso de una identidad administrativa, exceso de privilegios y falta de separación de responsabilidades.
+
+Asimismo, los problemas 1, 2, 3 y 10 están relacionados con la exposición de red, pero permiten evaluar controles de seguridad distintos y su efecto conjunto.
+
+### Pregunta de análisis
+
+**¿Es suficiente tener contraseñas fuertes?**
+
+No. Las contraseñas fuertes son importantes, pero no garantizan por sí solas la seguridad de PostgreSQL.
+
+La protección del servidor requiere considerar diferentes elementos.
+
+**Autenticación**
+
+Permite comprobar la identidad de quienes intentan conectarse.
+
+Es importante utilizar mecanismos adecuados, como SCRAM-SHA-256, y proteger las credenciales.
+
+Sin embargo, una contraseña fuerte no evita todos los riesgos de acceso no autorizado.
+
+**Autorización**
+
+Determina qué operaciones puede realizar cada cuenta después de autenticarse.
+
+Una cuenta administrativa utilizada por una aplicación representa un riesgo porque puede disponer de privilegios innecesarios.
+
+Por eso deben utilizarse roles y permisos basados en el principio de mínimo privilegio.
+
+**Red**
+
+Las conexiones deben limitarse a las interfaces y redes necesarias.
+
+Permitir el puerto de PostgreSQL desde cualquier origen incrementa las oportunidades de intentar acceder al servicio.
+
+El firewall debe complementar las restricciones del servidor.
+
+**Configuración**
+
+Parámetros como `listen_addresses` y las reglas de `pg_hba.conf` deben responder a necesidades concretas.
+
+Una configuración demasiado amplia puede permitir conexiones que no son necesarias para las operaciones del sistema.
+
+**Sistema operativo**
+
+Los archivos de configuración y el directorio de datos también deben estar protegidos.
+
+Los permisos de PostgreSQL no sustituyen los controles de acceso de Linux sobre los archivos físicos.
+
+**Monitoreo**
+
+Los registros y mecanismos de supervisión ayudan a identificar intentos de acceso, errores y comportamientos anormales.
+
+El monitoreo también permite detectar problemas de seguridad y disponibilidad.
+
+El escenario no indica si el servidor tiene habilitados TLS, registros de auditoría o políticas de actualización. Estos controles deberían verificarse, pero no se puede afirmar que estén ausentes sin información adicional.
+
+### Análisis
+
+El principal problema del escenario es la combinación de una superficie de red excesivamente amplia y el uso de una cuenta administrativa por parte de una aplicación.
+
+Aunque un atacante todavía necesitaría superar los mecanismos de autenticación, la exposición del servicio permite que se realicen intentos de conexión desde una gran cantidad de orígenes.
+
+Además, si una cuenta administrativa fuera comprometida, el impacto podría ser considerable.
+
+Para reducir estos riesgos, sería necesario restringir las interfaces, configurar reglas específicas de firewall y autenticación, y separar las cuentas administrativas de las utilizadas por aplicaciones.
+
+Estos cambios deberían realizarse de manera planificada, considerando la disponibilidad y la continuidad del servicio.
+
+### Conclusión
+
+Se identificaron diez problemas o riesgos relacionados con la configuración, exposición de red y administración de privilegios.
+
+La actividad permitió comprender que las contraseñas fuertes son solamente una parte de la seguridad de PostgreSQL.
+
+Una configuración segura requiere combinar autenticación, autorización, controles de red, protección del sistema operativo y monitoreo.
+
+También se comprendió que el hardening debe aplicarse mediante cambios justificados y verificables.
+
+Esta actividad fue un análisis conceptual. No se modificó el servidor PostgreSQL utilizado en el laboratorio.
+
 ## Cambios realizados
 
 ### Actividad 16. Comparación antes y después del hardening
