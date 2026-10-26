@@ -808,6 +808,50 @@ La actividad permitió comprender la importancia de combinar los controles de au
 
 No se modificaron propietarios, grupos ni permisos durante esta actividad.
 
+### Actividad 13. Revisar exposición de red
+
+**Objetivo**
+
+Verificar las interfaces y los puertos TCP utilizados por PostgreSQL para identificar posibles exposiciones innecesarias del servidor.
+
+**Procedimiento**
+
+Se utilizaron los comandos `ss -lnt` y `ss -lntp` desde Ubuntu para consultar los puertos que se encuentran escuchando.
+
+Posteriormente, se filtraron los resultados correspondientes al puerto `5433`, utilizado por PostgreSQL 18.
+
+**Resultados**
+
+| Elemento | Resultado |
+|---|---|
+| Dirección de escucha | `127.0.0.1` |
+| Puerto | `5433` |
+| Protocolo | TCP |
+| Estado | `LISTEN` |
+| Proceso | `postgres` |
+| PID observado | `28591` |
+| ¿Está expuesto fuera de la interfaz necesaria? | No se identificó exposición TCP fuera de la interfaz local. |
+
+También se observó un servicio escuchando en `127.0.0.1:5432`. No se identificó su proceso durante esta comprobación.
+
+**Análisis**
+
+La dirección `127.0.0.1` corresponde a la interfaz local IPv4, por lo que el servidor PostgreSQL 18 no está escuchando en interfaces TCP externas.
+
+Este resultado coincide con el parámetro `listen_addresses = 'localhost'`, identificado durante las actividades anteriores.
+
+La configuración es adecuada para el laboratorio, debido a que las prácticas se realizan desde el mismo equipo y no requieren conexiones remotas.
+
+La presencia del valor `0.0.0.0:*` en la columna `Peer Address` del comando `ss` no indica exposición externa. Para identificar la dirección de escucha se revisó la columna `Local Address:Port`.
+
+**Conclusión**
+
+Se comprobó que el servidor PostgreSQL utilizado en el laboratorio escucha mediante TCP en `127.0.0.1:5433`.
+
+No se identificó exposición TCP en interfaces externas y no fue necesario modificar la configuración de red.
+
+La actividad permitió comprender cómo comprobar desde Ubuntu que las interfaces utilizadas por un servicio coinciden con su configuración.
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
