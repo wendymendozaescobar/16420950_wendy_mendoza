@@ -852,6 +852,71 @@ No se identificó exposición TCP en interfaces externas y no fue necesario modi
 
 La actividad permitió comprender cómo comprobar desde Ubuntu que las interfaces utilizadas por un servicio coinciden con su configuración.
 
+### Actividad 14. Diseñar una política de firewall
+
+**Objetivo**
+
+Diseñar una política de firewall que restrinja las conexiones hacia PostgreSQL a los orígenes autorizados, aplicando el principio de mínimo privilegio en la red.
+
+**Procedimiento**
+
+Se analizó el escenario proporcionado, en el que un servidor PostgreSQL utiliza la dirección `10.10.10.20` y el puerto `5432`.
+
+Se estableció una regla conceptual para permitir conexiones desde la red `10.10.10.0/24` y denegar conexiones desde cualquier otro origen.
+
+No se realizaron modificaciones en el firewall del sistema operativo.
+
+### Resultados
+
+**Política de firewall propuesta:**
+
+| Origen | Destino | Puerto | Acción |
+|---|---|---|---|
+| `10.10.10.0/24` | `10.10.10.20` | TCP `5432` | Permitir |
+| Cualquier otro origen | `10.10.10.20` | TCP `5432` | Denegar |
+
+Esta política contempla únicamente el acceso al servicio PostgreSQL del escenario.
+
+Los valores corresponden al ejemplo del profesor y no a la configuración real de nuestro servidor local.
+
+### Pregunta de análisis
+
+**¿Por qué `pg_hba.conf` y el firewall no son controles equivalentes?**
+
+Porque funcionan en niveles diferentes y cumplen objetivos distintos.
+
+El firewall controla el tráfico de red, permitiendo o bloqueando comunicaciones según criterios como la dirección de origen, la dirección de destino, el puerto y el protocolo.
+
+Por su parte, `pg_hba.conf` establece las reglas que PostgreSQL utiliza para determinar qué conexiones pueden autenticarse y mediante qué método.
+
+Por ejemplo, el firewall puede permitir que un equipo alcance el puerto de PostgreSQL, pero el servidor puede rechazar posteriormente la conexión si no cumple las condiciones de autenticación.
+
+Por ello, el firewall y `pg_hba.conf` son controles complementarios y no deben utilizarse como sustitutos uno del otro.
+
+### Análisis
+
+La política propuesta restringe el acceso al puerto `5432` del servidor `10.10.10.20` a una red específica.
+
+Esto reduce la exposición frente a conexiones procedentes de redes no autorizadas.
+
+Sin embargo, permitir el acceso desde una red no significa que todos sus usuarios deban disponer de privilegios sobre las bases de datos.
+
+También es necesario configurar correctamente las reglas de autenticación y los permisos de PostgreSQL.
+
+En nuestro entorno local, el servidor PostgreSQL 18 utiliza el puerto `5433` y escucha en `127.0.0.1`.
+
+Por esta razón, no existe una necesidad identificada de aplicar la regla hipotética al sistema que utilizamos para las prácticas.
+
+### Conclusión
+
+Se diseñó una política conceptual de firewall que permite conexiones desde una red autorizada y deniega los demás orígenes hacia el servicio PostgreSQL.
+
+La actividad permitió comprender que el firewall protege el acceso a nivel de red, mientras que `pg_hba.conf` controla las condiciones de autenticación de PostgreSQL.
+
+Ambos mecanismos deben trabajar conjuntamente para reducir la superficie de ataque.
+
+No se modificó la configuración del firewall ni del servidor.
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
