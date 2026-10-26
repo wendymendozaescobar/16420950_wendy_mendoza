@@ -1120,7 +1120,72 @@ La propuesta distingue claramente entre controles comprobados y medidas recomend
 
 ## Verificación
 
-Pendiente de completar después de las actividades de hardening.
+### Verificación final del laboratorio
+
+**Objetivo**
+
+Comprobar que los parámetros, reglas de autenticación, roles, extensiones y mecanismos de seguridad observados al finalizar el laboratorio coinciden con los resultados documentados durante las actividades anteriores.
+
+**Procedimiento**
+
+Se creó el archivo `sql/04-verificacion.sql`, que contiene consultas de solo lectura para comprobar el estado del servidor PostgreSQL.
+
+Las consultas se ejecutaron mediante `psql` sobre PostgreSQL 18.6, utilizando la base de datos `laboratorios_unidad2` y el puerto `5433`.
+
+Se revisaron los parámetros generales, las reglas de `pg_hba.conf`, los atributos de los roles, las extensiones instaladas y el estado TLS de la conexión.
+
+### Resultados
+
+| Elemento verificado | Resultado | Estado |
+|---|---|---|
+| Versión de PostgreSQL | 18.6 | Coincide |
+| Puerto | `5433` | Coincide |
+| Interfaces de escucha configuradas | `localhost` | Coincide |
+| TLS habilitado | `on` | Coincide |
+| Versión mínima TLS | `TLSv1.2` | Coincide |
+| Cifrado de nuevas contraseñas | `scram-sha-256` | Coincide |
+| Conexiones máximas | `100` | Coincide |
+| Conexiones reservadas para superusuarios | `3` | Coincide |
+| `statement_timeout` | `0` | Coincide |
+| `idle_in_transaction_session_timeout` | `0` | Coincide |
+| `log_connections` | Valor vacío | Coincide |
+| `log_disconnections` | `off` | Coincide |
+| Reglas de autenticación | Siete reglas, sin errores reportados | Coincide |
+| Roles revisados | `postgres`, `lab02_tls`, `analista` y `soporte` | Coincide |
+| Extensiones | `pgcrypto` 1.4 y `plpgsql` 1.0 | Coincide |
+| TLS en la sesión final | No utilizado, por tratarse de un socket Unix local | Resultado esperado |
+
+### Análisis
+
+Los resultados de la verificación final coinciden con las configuraciones documentadas durante las actividades anteriores.
+
+Se comprobó que PostgreSQL conserva la escucha local, el puerto `5433` y los métodos de autenticación identificados previamente.
+
+La vista `pg_hba_file_rules` devolvió siete reglas sin errores reportados.
+
+Los atributos de los roles y las extensiones instaladas también coincidieron con las inspecciones iniciales.
+
+La conexión utilizada para ejecutar el script no empleó TLS porque se realizó mediante un socket Unix local.
+
+Sin embargo, durante la Actividad 15 se había comprobado una conexión TCP cifrada con TLS 1.3 utilizando la cuenta `lab02_tls`.
+
+Estos resultados muestran que no se introdujeron diferencias en los valores inspeccionados durante el desarrollo del laboratorio.
+
+La verificación no sustituye una auditoría completa de seguridad, pero permite comprobar los controles incluidos en el alcance de la práctica.
+
+### Conclusión
+
+La verificación final se completó correctamente.
+
+Las consultas ejecutadas no presentaron errores y los valores obtenidos coincidieron con las inspecciones anteriores.
+
+Se confirmó que las medidas de seguridad examinadas permanecen configuradas y se documentaron los aspectos que todavía requieren evaluación.
+
+No fue necesario modificar parámetros, roles, extensiones ni reglas de acceso.
+
+**Script:** [04-verificacion.sql](sql/04-verificacion.sql).
+
+**Evidencia:** [06-verificacion.png](evidencias/06-verificacion.png).
 
 ## Checklist de hardening
 
