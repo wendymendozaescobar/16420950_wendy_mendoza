@@ -563,3 +563,41 @@ Se comprendió que ejercer el derecho de oposición no implica necesariamente el
 La organización debe identificar qué finalidad está involucrada y determinar qué tratamiento corresponde restringir.
 
 El DBA debe implementar los mecanismos técnicos necesarios para respetar esas decisiones, sin asumir responsabilidades jurídicas que corresponden a otras áreas.
+
+## 11. Política de retención de datos
+
+### Objetivo
+
+Analizar los riesgos de conservar información personal indefinidamente y comprender cómo deben establecerse políticas de retención.
+
+### Procedimiento
+
+Se analizó la propuesta de conservar todos los datos de clientes sin establecer un límite de tiempo.
+
+Se identificaron los riesgos relacionados con esta práctica y los elementos necesarios para determinar periodos de conservación adecuados.
+
+### Resultados
+
+Se concluyó que conservar información indefinidamente únicamente porque podría utilizarse en el futuro no es compatible con el principio de minimización.
+
+También se identificaron riesgos relacionados con exposición de datos, incumplimiento de obligaciones, información desactualizada y dificultades para atender derechos ARCO.
+
+Se determinó que una política de retención debería documentar las categorías de datos, sus finalidades, periodos de conservación, justificaciones, responsables y procedimientos para finalizar el tratamiento.
+
+### Análisis
+
+Los periodos de conservación pueden variar según la finalidad y las obligaciones relacionadas con cada tipo de información.
+
+No es adecuado asignar automáticamente el mismo periodo a todos los campos de una base de datos.
+
+El DBA puede implementar mecanismos técnicos para apoyar el cumplimiento de estas políticas, pero no debe determinar por sí solo los plazos legales aplicables.
+
+### Conclusión
+
+La retención debe considerarse durante todo el ciclo de vida de los datos.
+
+Una política documentada permite justificar la conservación de información y establecer procedimientos para tratar los datos cuando dejan de ser necesarios.
+
+### Evidencia
+
+- [Política de retención de datos](evidencias/10-retencion.md)
