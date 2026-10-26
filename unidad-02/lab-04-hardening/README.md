@@ -224,6 +224,110 @@ No se modificó la configuración de PostgreSQL.
 
 **Script:** [Consultas de inspección](sql/01-inspeccion.sql).
 
+### Actividad 5. Analizar una regla permisiva
+
+**Objetivo**
+
+Analizar una regla de autenticación excesivamente amplia y proponer una alternativa basada en el principio de mínimo privilegio.
+
+**Regla proporcionada:**
+
+```text
+host    all    all    0.0.0.0/0    scram-sha-256
+```
+
+### Preguntas de análisis
+
+**1. ¿Qué bases de datos permite?**
+
+La regla contempla todas las bases de datos mediante el valor `all`.
+
+**2. ¿Qué usuarios permite?**
+
+Contempla todos los usuarios de PostgreSQL mediante el valor `all`, siempre que cumplan las condiciones de autenticación y conexión correspondientes.
+
+**3. ¿Qué direcciones de origen permite?**
+
+El rango `0.0.0.0/0` contempla todas las direcciones IPv4.
+
+Sin embargo, esto no garantiza que todas puedan establecer una conexión, porque también intervienen las interfaces de escucha y los controles de red.
+
+**4. ¿Qué método de autenticación utiliza?**
+
+Utiliza `scram-sha-256`, un mecanismo de autenticación mediante contraseña que emplea un protocolo de desafío y respuesta.
+
+**5. ¿Por qué puede representar una exposición innecesaria?**
+
+Porque permite intentar autenticarse desde un conjunto de direcciones mucho más amplio del que probablemente necesita una aplicación.
+
+Además, no restringe específicamente las bases de datos ni los usuarios.
+
+Esto puede aumentar la superficie de ataque cuando el servidor acepta conexiones desde redes externas.
+
+**6. ¿Qué información necesitarías para restringirla?**
+
+Sería necesario conocer:
+
+- Qué aplicación necesita conectarse.
+- Qué base de datos utiliza.
+- Qué cuenta de PostgreSQL necesita acceso.
+- Desde qué dirección IP o red se conecta.
+- Qué método de autenticación debe utilizar.
+- Qué restricciones de red existen.
+- Si el cambio podría afectar conexiones legítimas.
+
+### Propuesta de regla restringida
+
+**Regla actual del escenario:**
+
+```text
+host    all    all    0.0.0.0/0    scram-sha-256
+```
+
+**Problema:**
+
+La regla contempla cualquier base de datos, usuario y origen IPv4.
+
+**Origen que realmente necesita acceso:**
+
+Para el escenario de nuestro laboratorio local, se propone limitar las conexiones TCP a `127.0.0.1/32`.
+
+**Base de datos:**
+
+`laboratorios_unidad2`
+
+**Usuario:**
+
+Una cuenta de aplicación específica que deberá definirse y autorizarse antes de implementar la regla.
+
+**Regla conceptual propuesta:**
+
+```text
+host    laboratorios_unidad2    usuario_app    127.0.0.1/32    scram-sha-256
+```
+
+El nombre `usuario_app` representa una cuenta propuesta y no implica que actualmente exista en PostgreSQL.
+
+La regla se presenta únicamente como ejemplo de una configuración más específica.
+
+### Análisis
+
+La propuesta reduce el alcance del acceso al establecer una base de datos, un usuario y una dirección de origen determinados.
+
+Esto permite aplicar el principio de mínimo privilegio.
+
+Durante la Actividad 4 se comprobó que nuestro servidor ya utiliza reglas limitadas a direcciones locales IPv4 e IPv6, por lo que no se encontró la regla excesivamente amplia del escenario.
+
+No es necesario introducir una regla nueva sin comprobar primero las necesidades reales de las aplicaciones.
+
+### Conclusión
+
+Se comprendió que utilizar `scram-sha-256` no elimina los riesgos derivados de permitir conexiones desde redes innecesariamente amplias.
+
+Una configuración segura debe considerar conjuntamente la base de datos, el usuario, la dirección de origen y el método de autenticación.
+
+Durante esta actividad no se modificó `pg_hba.conf`.
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
