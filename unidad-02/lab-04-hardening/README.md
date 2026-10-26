@@ -599,6 +599,85 @@ El uso de cuentas específicas permite limitar las operaciones disponibles y red
 
 Durante esta actividad se realizó únicamente un diseño conceptual. No se crearon ni modificaron roles en PostgreSQL.
 
+### Actividad 10. Revisar extensiones de PostgreSQL
+
+**Objetivo**
+
+Identificar las extensiones instaladas en PostgreSQL, analizar sus funciones y determinar si representan funcionalidades necesarias o innecesarias para el entorno del laboratorio.
+
+**Procedimiento**
+
+Se consultó el catálogo `pg_extension` para identificar las extensiones instaladas en la base de datos `laboratorios_unidad2` y sus respectivas versiones.
+
+Se utilizó la siguiente consulta:
+
+```sql
+SELECT
+    extname,
+    extversion
+FROM pg_extension
+ORDER BY extname;
+```
+
+**Resultados**
+
+Se encontraron dos extensiones instaladas:
+
+| Extensión | Versión | Función | Evaluación |
+|---|---|---|---|
+| `pgcrypto` | 1.4 | Proporciona funciones criptográficas. | Utilizada durante las prácticas de cifrado del LAB-02. |
+| `plpgsql` | 1.0 | Permite desarrollar funciones y procedimientos almacenados. | Funcionalidad habitual de PostgreSQL que puede ser necesaria para funciones procedurales. |
+
+### Preguntas de análisis
+
+**1. ¿Qué extensiones existen?**
+
+En la base de datos `laboratorios_unidad2` se encontraron `pgcrypto`, versión 1.4, y `plpgsql`, versión 1.0.
+
+**2. ¿Cuáles son necesarias?**
+
+`pgcrypto` resulta útil para las actividades criptográficas desarrolladas durante el LAB-02.
+
+`plpgsql` proporciona capacidades para desarrollar funciones y procedimientos almacenados.
+
+Antes de determinar que alguna extensión es innecesaria, sería necesario revisar las dependencias y los requisitos reales de las aplicaciones.
+
+**3. ¿Cuáles fueron instaladas para prácticas?**
+
+Durante el LAB-02 se utilizó `pgcrypto` para realizar ejercicios de cifrado de información.
+
+No se comprobó durante esta actividad cuándo se instaló `plpgsql`.
+
+**4. ¿Cuáles podrían representar funcionalidad innecesaria en otro entorno?**
+
+En una instalación donde no se utilicen funciones criptográficas de `pgcrypto`, podría evaluarse si es necesario mantener esa extensión.
+
+De manera similar, cualquier extensión instalada debe justificarse de acuerdo con las necesidades del sistema.
+
+Sin embargo, no debe eliminarse una extensión sin comprobar primero sus dependencias y posibles consecuencias.
+
+### Análisis
+
+La revisión permitió identificar las extensiones disponibles en la base de datos utilizada para los laboratorios.
+
+Se observó que `pgcrypto` proporciona funcionalidades relacionadas con prácticas anteriores, mientras que `plpgsql` permite desarrollar lógica procedural dentro de PostgreSQL.
+
+No se identificó una extensión que debiera eliminarse inmediatamente.
+
+La aplicación del hardening requiere evaluar las funcionalidades instaladas, pero no implica eliminar componentes simplemente porque estén presentes.
+
+También debe considerarse que `pg_extension` muestra las extensiones instaladas en la base de datos consultada, no necesariamente en todas las bases del servidor.
+
+### Conclusión
+
+Se identificaron dos extensiones instaladas: `pgcrypto` y `plpgsql`.
+
+La actividad permitió comprender que las extensiones amplían las capacidades de PostgreSQL y deben revisarse según las necesidades del entorno.
+
+No se realizaron modificaciones ni se eliminaron extensiones.
+
+**Script utilizado:** [03-configuracion.sql](sql/03-configuracion.sql).
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
