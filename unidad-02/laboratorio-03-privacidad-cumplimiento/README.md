@@ -475,3 +475,91 @@ El DBA debe identificar dependencias y copias de información, colaborar con las
 ### Evidencia
 
 - [Derecho de cancelación y ciclo de vida](evidencias/08-ciclo-vida.md)
+
+## 10. Derecho ARCO de oposición
+
+### Objetivo
+
+Analizar las implicaciones de una solicitud de oposición al tratamiento de datos personales y comprender cómo pueden limitarse determinadas finalidades sin eliminar necesariamente toda la información del titular.
+
+### Procedimiento
+
+Se analizó el escenario de un cliente que solicita que sus datos personales dejen de utilizarse para una finalidad secundaria.
+
+Se identificó qué información podría necesitar conservarse, qué tratamientos deberían restringirse y qué mecanismos técnicos podrían utilizarse para separar las finalidades.
+
+### Resultados obtenidos
+
+**¿Es necesario eliminar inmediatamente todos los datos del cliente?**
+
+No necesariamente.
+
+El derecho de oposición puede implicar que la organización deje de utilizar determinados datos para una finalidad específica, sin que esto signifique eliminar automáticamente toda la información que conserva.
+
+Por ejemplo, si un cliente se opone al uso de su correo electrónico para publicidad, la empresa podría necesitar conservar ese correo para comunicaciones operativas justificadas.
+
+La procedencia y el alcance de la solicitud deben ser evaluados por las áreas responsables conforme a las condiciones legales aplicables.
+
+### Preguntas de análisis
+
+**1. ¿Qué información podría necesitar mantenerse?**
+
+Podrían conservarse los datos necesarios para administrar la relación comercial, atender solicitudes del cliente, realizar operaciones autorizadas y cumplir obligaciones legales aplicables.
+
+Por ejemplo, la organización podría necesitar mantener el identificador del cliente, determinada información de contacto y los datos fiscales correspondientes.
+
+Sin embargo, la conservación debe estar justificada y respetar los periodos de retención establecidos.
+
+**2. ¿Qué información podría dejar de utilizarse para determinada finalidad?**
+
+Si procede la oposición al tratamiento con fines publicitarios, la organización debería dejar de utilizar para esa finalidad los datos correspondientes.
+
+Por ejemplo:
+
+- Correo electrónico para campañas promocionales.
+- Ciudad para segmentación publicitaria.
+- Rangos de edad utilizados para personalizar promociones.
+- Información sobre comportamiento de compra utilizada para marketing, si existiera y estuviera comprendida en la solicitud.
+
+Estos datos podrían mantenerse para otras finalidades legítimas cuando corresponda, pero no deberían seguir utilizándose para la finalidad respecto de la cual procedió la oposición.
+
+**3. ¿Qué mecanismos técnicos podrían separar finalidades?**
+
+En PostgreSQL podrían implementarse diferentes controles:
+
+1. **Roles y permisos:** limitar el acceso de cada departamento a los datos necesarios.
+2. **Vistas:** presentar únicamente las columnas autorizadas para cada finalidad.
+3. **Separación de esquemas:** organizar los objetos de acuerdo con sus funciones.
+4. **Registro de preferencias:** mantener información sobre las finalidades para las que un cliente ha ejercido su oposición.
+5. **Filtros en consultas:** excluir de las campañas a los clientes cuya oposición haya sido aceptada.
+6. **Auditoría:** registrar las modificaciones de preferencias y los accesos relevantes.
+
+Estos mecanismos deben diseñarse de manera que los distintos sistemas respeten las restricciones correspondientes.
+
+**4. ¿Por qué la decisión final no debe ser tomada únicamente por el DBA?**
+
+Porque determinar si procede una solicitud de oposición requiere analizar las finalidades del tratamiento, las obligaciones de la organización y el marco jurídico aplicable.
+
+El DBA tiene conocimientos técnicos para implementar restricciones, permisos, consultas y controles de seguridad, pero no debería decidir por sí solo si una organización está jurídicamente obligada a dejar de tratar determinada información.
+
+Esa decisión debe involucrar a las áreas responsables de privacidad, cumplimiento y, cuando corresponda, al área jurídica y al propietario de los datos.
+
+### Análisis
+
+La actividad permitió identificar que los derechos de cancelación y oposición tienen implicaciones diferentes.
+
+La cancelación puede requerir acciones relacionadas con la eliminación o el tratamiento de determinados datos, cuando proceda.
+
+La oposición se relaciona con impedir o detener un tratamiento específico bajo las condiciones aplicables.
+
+Desde el punto de vista técnico, PostgreSQL puede contribuir mediante vistas, roles, permisos y mecanismos para registrar y aplicar las preferencias de los titulares.
+
+Sin embargo, los controles técnicos deben responder a decisiones organizacionales y jurídicas previamente establecidas.
+
+### Conclusión
+
+Se comprendió que ejercer el derecho de oposición no implica necesariamente eliminar toda la información personal de una base de datos.
+
+La organización debe identificar qué finalidad está involucrada y determinar qué tratamiento corresponde restringir.
+
+El DBA debe implementar los mecanismos técnicos necesarios para respetar esas decisiones, sin asumir responsabilidades jurídicas que corresponden a otras áreas.
