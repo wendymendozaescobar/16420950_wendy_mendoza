@@ -74,3 +74,53 @@ La protección de datos durante su transmisión es diferente de la protección d
 Comprobamos que PostgreSQL puede tener TLS habilitado sin que una sesión determinada lo esté utilizando.
 
 Por ello, no basta con revisar la configuración general del servidor: también es necesario verificar las características de cada conexión.
+
+## Actividad 6. Conexión mediante psql
+
+### Objetivo
+
+Establecer una conexión TCP/IP protegida mediante TLS y comprobar las características de seguridad de la sesión.
+
+### Procedimiento
+
+Primero se revisaron las reglas de autenticación de PostgreSQL. Se identificó que las conexiones TCP/IP locales utilizan `scram-sha-256`.
+
+Se creó el rol `lab02_tls` con permiso de inicio de sesión y se configuró una contraseña de prueba mediante `\password`, sin incluirla en los archivos del laboratorio.
+
+Posteriormente se estableció una conexión utilizando:
+
+```bash
+psql "host=127.0.0.1 port=5433 dbname=laboratorios_unidad2 user=lab02_tls sslmode=require"
+```
+
+Se verificó la conexión mediante `\conninfo` y consultas a `pg_stat_ssl`.
+
+### Resultados obtenidos
+
+| Parámetro | Resultado |
+|---|---|
+| Usuario | `lab02_tls` |
+| Dirección del servidor | `127.0.0.1` |
+| Puerto del servidor | `5433` |
+| TLS habilitado en la sesión | `t` |
+| Versión TLS | `TLSv1.3` |
+| Algoritmo negociado | `TLS_AES_256_GCM_SHA384` |
+| Superusuario | No |
+
+### Análisis
+
+En la Actividad 5, la conexión mediante socket Unix no utilizaba TLS.
+
+En esta actividad se estableció una conexión TCP/IP solicitando TLS mediante `sslmode=require`.
+
+La consulta a `pg_stat_ssl` confirmó que la nueva conexión estaba cifrada mediante TLS 1.3.
+
+También se comprobó que `sslmode=require` exige cifrado, pero no proporciona la validación completa de identidad del servidor que ofrece `verify-full`.
+
+### Conclusión
+
+Se consiguió establecer y verificar una conexión TCP/IP protegida mediante TLS.
+
+La práctica permitió comprender que la configuración general de PostgreSQL y el estado de seguridad de una sesión son cuestiones diferentes.
+
+También se comprobó la importancia de utilizar roles con permisos limitados para las conexiones de prueba.

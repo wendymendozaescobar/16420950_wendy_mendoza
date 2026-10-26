@@ -117,3 +117,27 @@ Esto permitió comprender la diferencia entre tener TLS habilitado en el servido
 
 - [Comandos de verificación TLS](sql/03-verificacion-tls.sql)
 - [Resultados y análisis de TLS](evidencias/04-tls.md)
+
+### Actividad 6. Conexión mediante psql
+
+Se estableció una conexión TCP/IP a PostgreSQL utilizando el parámetro `sslmode=require`.
+
+Para realizar la prueba se creó el rol `lab02_tls`, con permisos limitados y autenticación mediante contraseña.
+
+#### Resultados
+
+Se verificó que la conexión utilizaba TLS 1.3 y la suite criptográfica `TLS_AES_256_GCM_SHA384`.
+
+A diferencia de la conexión mediante socket Unix utilizada anteriormente, esta sesión sí empleaba TLS.
+
+#### Conclusión
+
+Se comprobó que las conexiones TCP/IP pueden protegerse mediante TLS y que es necesario verificar el estado real de cada sesión.
+
+También se identificó que solicitar TLS no equivale a validar completamente la identidad del servidor.
+
+#### Evidencias
+
+- [Consultas SQL](sql/03-verificacion-tls.sql)
+- [Resultados de TLS](evidencias/04-tls.md)
+
