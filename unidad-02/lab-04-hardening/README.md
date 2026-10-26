@@ -1257,4 +1257,16 @@ No se modificó la configuración del servidor durante esta actividad.
 
 ## Conclusiones
 
-Pendiente de completar al finalizar el laboratorio.
+Durante el LAB-04 se inspeccionó la configuración de seguridad de PostgreSQL 18.6 sobre Ubuntu.
+
+Se revisaron las interfaces de escucha, el puerto, las reglas de autenticación, los roles, los privilegios, las extensiones, los parámetros de conexión, los permisos del sistema operativo y el uso de TLS.
+
+También se elaboró una política conceptual de firewall, una comparación de configuración, un checklist de quince controles y una línea base de seguridad.
+
+La verificación final confirmó que los parámetros y controles inspeccionados coincidían con los resultados documentados durante las actividades anteriores.
+
+No se realizaron modificaciones técnicas al servidor. Los cambios propuestos quedaron documentados para su posible evaluación e implementación posterior.
+
+El laboratorio permitió comprender que el hardening requiere identificar riesgos, aplicar controles complementarios y verificar los resultados sin comprometer innecesariamente el funcionamiento de PostgreSQL.
+
+**Informe final:** [Informe del LAB-04](informe.md).
