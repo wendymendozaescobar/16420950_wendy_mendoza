@@ -679,3 +679,117 @@ La privacidad por defecto contribuye a que el sistema comience con configuracion
 ### Evidencia
 
 - [Análisis de privacidad por diseño](evidencias/12-privacidad-diseno.md)
+
+## 14. Controles técnicos y administrativos
+
+### Objetivo
+
+Diferenciar los controles técnicos de los administrativos relacionados con la privacidad y seguridad de la información, identificando cómo se complementan dentro de una organización.
+
+### Procedimiento
+
+Se analizaron las ocho medidas de seguridad presentadas en el escenario del laboratorio.
+
+Cada medida se clasificó de acuerdo con su función principal y se identificaron aquellas que pueden involucrar tanto controles técnicos como administrativos.
+
+### Resultado obtenido
+
+| Medida | Técnico | Administrativo |
+|---|:---:|:---:|
+| Crear roles de PostgreSQL | Sí | No |
+| Política de retención | No | Sí |
+| Cifrado de datos | Sí | No |
+| Procedimiento para solicitudes ARCO | No | Sí |
+| Vista con información limitada | Sí | No |
+| Clasificación de información | No | Sí |
+| Registro de auditoría | Sí | Sí |
+| Política de control de acceso | No | Sí |
+
+### Justificación de las decisiones
+
+**1. Crear roles de PostgreSQL — Control técnico**
+
+La creación de roles se realiza mediante mecanismos del sistema gestor de bases de datos.
+
+Por ejemplo, PostgreSQL permite utilizar `CREATE ROLE` y `GRANT` para administrar usuarios y privilegios.
+
+Aunque los permisos deben responder a políticas organizacionales, crear el rol constituye una implementación técnica.
+
+**2. Política de retención — Control administrativo**
+
+Establece las reglas sobre cuánto tiempo deben conservarse los datos y qué debe ocurrir cuando termina su periodo de conservación.
+
+La política es administrativa porque define obligaciones y procedimientos.
+
+Su aplicación puede apoyarse en mecanismos técnicos de eliminación, anonimización o revisión de registros.
+
+**3. Cifrado de datos — Control técnico**
+
+El cifrado utiliza mecanismos criptográficos para proteger la información.
+
+Durante el LAB-02 utilizamos funciones de PostgreSQL para cifrar un RFC ficticio.
+
+La implementación del cifrado es técnica, aunque su utilización debe estar respaldada por decisiones y políticas de seguridad.
+
+**4. Procedimiento para solicitudes ARCO — Control administrativo**
+
+Establece cómo debe recibir, revisar, autorizar y atender la organización las solicitudes relacionadas con los derechos de acceso, rectificación, cancelación y oposición.
+
+Se considera administrativo porque define responsabilidades y pasos organizacionales.
+
+Su ejecución puede necesitar consultas SQL, modificaciones de registros y otros mecanismos técnicos.
+
+**5. Vista con información limitada — Control técnico**
+
+Las vistas de PostgreSQL permiten presentar únicamente determinados campos o registros.
+
+Durante la Actividad 4 creamos `lab03.v_analitica_clientes` para proporcionar información limitada al rol `analista`.
+
+Esta medida es técnica porque se implementa directamente en la base de datos.
+
+**6. Clasificación de información — Control administrativo**
+
+Consiste en establecer categorías para determinar qué información necesita protección y qué condiciones deben aplicarse a su tratamiento.
+
+Es principalmente administrativa porque requiere criterios, responsabilidades y políticas de clasificación.
+
+También puede apoyarse en herramientas técnicas que identifiquen o etiqueten los datos según su clasificación.
+
+**7. Registro de auditoría — Control técnico y administrativo**
+
+Es técnico porque requiere mecanismos que registren las operaciones realizadas sobre los sistemas y los datos.
+
+También es administrativo porque la organización debe establecer qué actividades se registrarán, quién revisará los registros y cuánto tiempo deberán conservarse.
+
+Ambos componentes son necesarios para que la auditoría resulte útil.
+
+**8. Política de control de acceso — Control administrativo**
+
+Define las reglas que determinan quién puede acceder a determinada información y bajo qué condiciones.
+
+Es administrativa porque establece los criterios de autorización.
+
+Su implementación puede realizarse mediante controles técnicos como roles, permisos y vistas.
+
+### Análisis
+
+Los controles técnicos y administrativos cumplen funciones diferentes, pero se complementan.
+
+Las políticas permiten establecer qué debe protegerse, quién es responsable y cuáles son las condiciones de acceso.
+
+Los mecanismos técnicos permiten aplicar determinadas restricciones dentro de los sistemas.
+
+Por ejemplo, una política de mínimo privilegio establece que cada departamento debe consultar únicamente la información necesaria para sus funciones.
+
+Posteriormente, el DBA puede implementar esa política mediante roles, vistas y permisos en PostgreSQL.
+
+También se identificó que ciertas medidas, como el registro de auditoría, necesitan tanto herramientas tecnológicas como procedimientos organizacionales.
+
+### Conclusión
+
+Se comprendió que la protección de datos personales no depende únicamente de configuraciones técnicas.
+
+Una organización necesita establecer políticas y responsabilidades claras, además de implementar los mecanismos tecnológicos correspondientes.
+
+El DBA participa principalmente en la implementación y mantenimiento de los controles técnicos, pero debe trabajar de manera coordinada con las áreas responsables de privacidad, seguridad y cumplimiento.
+
