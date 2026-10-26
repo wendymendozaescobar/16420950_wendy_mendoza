@@ -979,7 +979,19 @@ No fue necesario modificar certificados, usuarios ni parámetros de PostgreSQL.
 
 ## Cambios realizados
 
-Todavía no se han realizado modificaciones de seguridad.
+### Actividad 16. Comparación antes y después del hardening
+
+Se elaboró una comparación de diez controles de seguridad utilizando los resultados obtenidos durante las actividades anteriores.
+
+La revisión incluyó interfaces de escucha, reglas de autenticación, métodos de autenticación, usuarios, cuentas de aplicación, puerto, TLS, permisos del sistema operativo, extensiones y conexiones.
+
+No se realizaron cambios en la configuración del servidor durante las primeras quince actividades.
+
+Se comprobó que varios controles ya estaban configurados adecuadamente y se identificaron mejoras pendientes de evaluación.
+
+La ausencia de cambios no implica que se haya completado todo el hardening del servidor. Significa que las actividades realizadas hasta este punto consistieron en inspección, análisis y documentación.
+
+**Evidencia:** [Comparación de configuración antes y después](configuracion/cambios.md).
 
 ## Justificación de los cambios
 
