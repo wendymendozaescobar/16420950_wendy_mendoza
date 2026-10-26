@@ -678,6 +678,87 @@ No se realizaron modificaciones ni se eliminaron extensiones.
 
 **Script utilizado:** [03-configuracion.sql](sql/03-configuracion.sql).
 
+### Actividad 11. Revisar configuración relacionada con conexiones
+
+**Objetivo**
+
+Identificar los parámetros de PostgreSQL relacionados con los límites de conexiones y los tiempos de espera, para analizar sus implicaciones en la seguridad y disponibilidad del servidor.
+
+**Procedimiento**
+
+Se consultaron cuatro parámetros de PostgreSQL mediante instrucciones `SHOW`, sin realizar modificaciones en la configuración.
+
+**Resultados**
+
+| Parámetro | Valor actual | Función |
+|---|---|---|
+| `max_connections` | `100` | Establece el número máximo de conexiones simultáneas permitidas por el servidor. |
+| `superuser_reserved_connections` | `3` | Reserva capacidad de conexión para superusuarios. |
+| `statement_timeout` | `0` | Controla la duración máxima de las instrucciones SQL. El valor cero desactiva este límite. |
+| `idle_in_transaction_session_timeout` | `0` | Controla cuánto tiempo puede permanecer una sesión inactiva dentro de una transacción. El valor cero desactiva este límite. |
+
+### Análisis de los parámetros
+
+**1. `max_connections`**
+
+El servidor permite un máximo de 100 conexiones simultáneas, considerando las reservas de conexiones configuradas.
+
+Un número excesivamente alto puede incrementar el consumo de memoria y otros recursos.
+
+Un límite demasiado bajo puede impedir que las aplicaciones establezcan conexiones cuando se alcance la capacidad disponible.
+
+Para determinar si el valor es adecuado, sería necesario conocer las necesidades de las aplicaciones y el consumo real de recursos.
+
+**2. `superuser_reserved_connections`**
+
+Se identificaron tres conexiones reservadas para superusuarios.
+
+Este mecanismo ayuda a conservar capacidad de acceso administrativo cuando el servidor se aproxima a su límite de conexiones.
+
+**3. `statement_timeout`**
+
+El valor obtenido fue `0`, lo que significa que no existe un límite general de duración de las instrucciones mediante este parámetro.
+
+Esto puede permitir que determinadas consultas consuman recursos durante periodos prolongados.
+
+Sin embargo, establecer un límite requiere considerar cuánto tiempo necesitan las operaciones legítimas.
+
+**4. `idle_in_transaction_session_timeout`**
+
+El valor obtenido fue `0`, por lo que no existe un límite general de inactividad dentro de una transacción mediante este parámetro.
+
+Esto puede representar un riesgo cuando una sesión deja una transacción abierta sin ejecutar `COMMIT` o `ROLLBACK`.
+
+En determinadas circunstancias, estas transacciones pueden mantener bloqueos, conservar versiones antiguas de registros e interferir con operaciones de mantenimiento.
+
+### Pregunta de análisis
+
+**¿Por qué mantener conexiones indefinidamente abiertas puede representar un problema de disponibilidad o consumo de recursos?**
+
+Porque cada conexión utiliza recursos del servidor, como memoria y estructuras de administración de procesos.
+
+Cuando existen demasiadas conexiones abiertas, puede aumentar el consumo de recursos y reducirse la capacidad para atender nuevas solicitudes.
+
+Además, una sesión que permanece inactiva dentro de una transacción puede conservar bloqueos y dificultar determinadas operaciones sobre la base de datos.
+
+Por ello, es importante establecer políticas adecuadas de administración de conexiones, utilizar mecanismos de reutilización cuando corresponda y evaluar los tiempos máximos de ejecución e inactividad.
+
+Sin embargo, no todas las conexiones inactivas representan el mismo riesgo. Una conexión inactiva sin transacción abierta tiene implicaciones diferentes de una sesión que mantiene una transacción pendiente.
+
+### Conclusión
+
+Se identificaron los límites de conexiones y tiempos de espera configurados en PostgreSQL.
+
+El servidor tiene un máximo de 100 conexiones y reserva tres para superusuarios.
+
+También se observó que `statement_timeout` e `idle_in_transaction_session_timeout` tienen un valor de cero.
+
+Estos valores deben evaluarse de acuerdo con las necesidades del entorno antes de aplicar modificaciones.
+
+Durante esta actividad no se cambiaron parámetros del servidor.
+
+**Script utilizado:** [03-configuracion.sql](sql/03-configuracion.sql).
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
