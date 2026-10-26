@@ -460,6 +460,67 @@ Se comprendió que una configuración segura requiere combinar métodos adecuado
 
 No fue necesario modificar la configuración del servidor.
 
+### Actividad 8. Revisar usuarios y privilegios
+
+**Objetivo**
+
+Identificar los roles de PostgreSQL, sus capacidades administrativas y sus permisos para iniciar sesión, con el propósito de detectar posibles privilegios excesivos.
+
+**Procedimiento**
+
+Se ejecutó el comando `\du` para visualizar los roles y sus atributos.
+
+Posteriormente, se consultó `pg_roles` para identificar los privilegios de superusuario, creación de roles, creación de bases de datos e inicio de sesión.
+
+**Resultados**
+
+La consulta devolvió 20 roles, incluyendo los roles predefinidos de PostgreSQL.
+
+Los cuatro roles propios del entorno de prácticas fueron:
+
+| Rol | LOGIN | SUPERUSER | CREATEROLE | CREATEDB | Función |
+|---|---|---|---|---|---|
+| `postgres` | Sí | Sí | Sí | Sí | Administración del servidor |
+| `lab02_tls` | Sí | No | No | No | Cuenta utilizada durante LAB-02 |
+| `analista` | No | No | No | No | Administración de privilegios para analítica |
+| `soporte` | No | No | No | No | Administración de privilegios para soporte |
+
+### Análisis
+
+Se identificó que `postgres` es el único superusuario entre los roles propios del laboratorio.
+
+También se comprobó que `lab02_tls` puede iniciar sesión, pero no tiene los atributos `SUPERUSER`, `CREATEROLE` ni `CREATEDB`.
+
+Los roles `analista` y `soporte` no pueden iniciar sesión directamente debido a su configuración `NOLOGIN`.
+
+Los demás roles encontrados comienzan con `pg_` y corresponden a roles predefinidos de PostgreSQL.
+
+No se identificó una cuenta de aplicación productiva cuya configuración pudiera evaluarse.
+
+Tampoco se determinó que alguno de los roles existentes fuera innecesario, ya que esto requeriría comprobar previamente sus funciones y dependencias.
+
+**¿Por qué no debería utilizarse una cuenta SUPERUSER como cuenta normal de una aplicación?**
+
+Porque una cuenta `SUPERUSER` dispone de capacidades administrativas que normalmente no son necesarias para el funcionamiento de una aplicación.
+
+Si la aplicación presentara una vulnerabilidad o sus credenciales fueran comprometidas, un atacante podría aprovechar esos privilegios elevados para acceder a información, modificar objetos o realizar operaciones administrativas.
+
+Por ello, las aplicaciones deberían utilizar cuentas específicas con los permisos mínimos necesarios para realizar sus funciones.
+
+### Conclusión
+
+Se identificaron los roles existentes y se distinguieron sus capacidades de inicio de sesión y administración.
+
+La actividad permitió comprender que los roles administrativos deben utilizarse únicamente cuando sus privilegios sean necesarios.
+
+También se comprobó que los roles `NOLOGIN` pueden servir para organizar permisos sin permitir conexiones directas.
+
+Durante esta actividad no se modificaron ni eliminaron roles.
+
+**Evidencia:** [Usuarios y privilegios](evidencias/04-roles.png).
+
+**Script:** [Consultas de roles](sql/02-roles.sql).
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
