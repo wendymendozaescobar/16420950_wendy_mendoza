@@ -643,3 +643,39 @@ Una matriz de responsabilidades ayuda a aplicar los principios de minimización,
 ### Evidencia
 
 - [Matriz de gobierno de datos](evidencias/11-gobierno-datos.md)
+
+## 13. Privacidad por diseño
+
+### Objetivo
+
+Analizar una propuesta de base de datos para identificar los riesgos de recopilar información personal sin una finalidad previamente definida.
+
+### Procedimiento
+
+Se evaluó una tabla propuesta para registrar clientes que incluía información de identificación, contacto, situación personal y datos financieros.
+
+Se analizaron los principios de minimización, finalidad, privacidad por diseño y privacidad por defecto.
+
+### Resultados
+
+Se identificó que varios campos propuestos requerían una justificación adicional antes de incorporarse a la base de datos.
+
+Se propuso una estructura inicial con información mínima para el registro y atención básica de clientes.
+
+También se identificaron mecanismos para reducir la exposición de información mediante controles de acceso, vistas, separación de finalidades y políticas de retención.
+
+### Análisis
+
+Almacenar información únicamente porque podría resultar útil en el futuro puede generar riesgos de privacidad.
+
+El diseño de una base de datos debe partir de las finalidades del sistema y determinar qué información necesita realmente cada proceso.
+
+### Conclusión
+
+La privacidad por diseño permite identificar necesidades y riesgos antes de implementar una base de datos.
+
+La privacidad por defecto contribuye a que el sistema comience con configuraciones que limiten la recopilación, utilización y exposición de datos personales.
+
+### Evidencia
+
+- [Análisis de privacidad por diseño](evidencias/12-privacidad-diseno.md)
