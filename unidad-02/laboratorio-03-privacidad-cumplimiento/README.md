@@ -267,3 +267,76 @@ La información entregada a cada departamento debe limitarse a lo necesario para
 ### Evidencia
 
 - [Análisis de finalidad secundaria](evidencias/05-finalidad-secundaria.md)
+
+## 7. Derecho ARCO de acceso
+
+### Objetivo
+
+Identificar las implicaciones técnicas que tiene una solicitud de acceso a datos personales y comprender cómo PostgreSQL puede utilizarse para localizar la información de un titular.
+
+### Procedimiento
+
+Se analizó el caso de un cliente que solicita conocer los datos personales que la organización tiene registrados.
+
+Se utilizó una consulta SQL sobre la tabla `public.clientes`, aplicando una condición `WHERE` para localizar la información asociada con un correo electrónico específico.
+
+La consulta utilizada fue:
+
+```sql
+SELECT
+    id,
+    nombre,
+    correo,
+    telefono,
+    rfc,
+    edad,
+    ciudad,
+    codigo_postal,
+    fecha_alta
+FROM public.clientes
+WHERE correo = 'ana@example.com';
+```
+
+### Resultado obtenido
+
+Se ejecutó una consulta SQL sobre la tabla `public.clientes` para localizar la información personal asociada con el correo electrónico ficticio `ana@example.com`.
+
+PostgreSQL ejecutó correctamente la consulta y devolvió el siguiente resultado:
+
+```text
+(0 filas)
+```
+
+Esto indica que no se encontraron registros asociados con el correo electrónico utilizado en el ejemplo del profesor.
+
+La ausencia de resultados no representa un error en la consulta, sino que el valor buscado no coincide con ningún registro de la tabla.
+
+No fue necesario insertar, modificar ni eliminar información para realizar esta comprobación.
+
+La práctica permitió demostrar cómo utilizar la cláusula `WHERE` para buscar información de un titular específico, evitando consultar indiscriminadamente todos los registros de clientes.
+
+### Pregunta de análisis
+
+**¿Qué información adicional debería proporcionar la organización además del resultado de esta consulta?**
+
+La organización debería proporcionar la información relacionada con el tratamiento de los datos personales que corresponda conforme a las condiciones aplicables.
+
+Entre los aspectos relevantes se encuentran las finalidades del tratamiento, el origen de la información, las transferencias realizadas cuando corresponda, los criterios de conservación y los mecanismos para ejercer otros derechos relacionados con los datos personales.
+
+También es importante comprobar que la solicitud proviene del titular o de una persona autorizada para actuar en su representación.
+
+### Análisis
+
+La consulta permite localizar información asociada con un cliente dentro de PostgreSQL.
+
+Sin embargo, los datos podrían encontrarse también en otras tablas, respaldos, exportaciones o sistemas relacionados.
+
+Por esta razón, atender técnicamente una solicitud de acceso requiere conocer dónde se encuentra la información personal y cómo se relaciona entre los diferentes sistemas.
+
+El DBA puede colaborar mediante consultas, inventarios de información y controles de acceso, pero la decisión sobre el alcance de la respuesta corresponde a las áreas responsables de privacidad y cumplimiento.
+
+### Conclusión
+
+La actividad permitió comprender que el derecho de acceso tiene implicaciones técnicas en la administración de bases de datos.
+
+PostgreSQL facilita la localización de registros mediante consultas SQL, pero atender una solicitud de acceso requiere procedimientos adicionales para verificar la identidad del titular, identificar la información correspondiente y protegerla durante su entrega.
