@@ -87,6 +87,18 @@ En nuestro laboratorio, las tablas `public.clientes` y `lab03.clientes_soporte` 
 
 Por ello, antes de ejecutar una operación de eliminación, resulta necesario analizar las consecuencias sobre los datos relacionados.
 
+### Comprobación de consistencia entre tablas
+
+Durante la revisión final del laboratorio se comprobó que el cliente con `id = 1` tiene el correo `nuevo-correo@example.com` en `public.clientes`, mientras que `lab03.clientes_soporte` conserva `ana.lopez@example.test`.
+
+Esto ocurre porque la tabla de soporte se pobló mediante `INSERT ... SELECT` y no cuenta con un mecanismo de sincronización automática.
+
+La comprobación demuestra que una modificación realizada sobre la tabla principal no necesariamente se refleja en otras copias de los datos.
+
+Por lo tanto, antes de atender completamente una solicitud de rectificación o cancelación, deben identificarse las estructuras relacionadas y definirse las acciones correspondientes.
+
+La comprobación se realizó mediante una consulta `SELECT` y no modificó los registros.
+
 ## Conclusión
 
 Se identificó que eliminar un registro de una tabla no garantiza la eliminación de todas las copias relacionadas con una persona.

@@ -8,19 +8,138 @@ Se utilizará PostgreSQL para analizar aspectos relacionados con privacidad, min
 
 El escenario corresponde a una empresa ficticia que administra información de clientes.
 
-## 2. Inventario y finalidad de los datos
+## 2. Inventario de datos
 
-Se identificaron nueve campos de la tabla `public.clientes` y se analizaron sus finalidades, necesidades, niveles de acceso y criterios de retención.
+Se revisó la tabla `public.clientes` de PostgreSQL y se identificaron nueve campos relacionados con la información de los clientes.
 
-Se determinó que no todas las áreas necesitan consultar todos los datos.
+Para cada campo se analizó si constituye información personal, su finalidad, necesidad, nivel de acceso y criterios de conservación.
 
-El área de atención al cliente requiere principalmente información de identificación y contacto, mientras que facturación necesita información fiscal y analítica puede trabajar con resultados agregados.
+### Matriz de inventario
+
+| Campo | ¿Es dato personal? | Finalidad | ¿Es necesario? | Nivel de acceso | Retención |
+|---|---|---|---|---|---|
+| `id` | Sí, al relacionarse con el cliente | Identificación de registros | Sí | Áreas autorizadas | Según finalidad y obligaciones aplicables |
+| `nombre` | Sí | Identificación y atención | Sí | Atención al cliente y facturación | Según finalidad y obligaciones aplicables |
+| `correo` | Sí | Comunicación con el cliente | Condicional | Atención al cliente | Mientras sea necesario para finalidades autorizadas |
+| `telefono` | Sí | Contacto y seguimiento | Condicional | Atención al cliente | Según necesidad de contacto |
+| `rfc` | Sí | Identificación fiscal y facturación | Cuando se requiera para fines fiscales | Facturación | Según obligaciones fiscales |
+| `edad` | Sí, cuando se relaciona con el titular | Estadísticas por rangos | Condicional | Analítica mediante datos agregados | Según finalidad estadística justificada |
+| `ciudad` | Sí, cuando se relaciona con el titular | Estadísticas geográficas | Condicional | Analítica y áreas operativas justificadas | Según finalidad documentada |
+| `codigo_postal` | Sí, cuando se relaciona con el titular | Análisis regional | Condicional | Áreas autorizadas | Según finalidad documentada |
+| `fecha_alta` | Sí, cuando se relaciona con el titular | Seguimiento y ciclo de vida del registro | Condicional | Administración autorizada | Según la política de conservación |
+
+### Análisis del inventario
+
+Los datos identificados tienen finalidades diferentes.
+
+El departamento de atención al cliente necesita principalmente información de identificación y contacto.
+
+El departamento de facturación requiere información fiscal para cumplir las actividades correspondientes.
+
+El departamento de analítica puede elaborar estadísticas utilizando información agrupada, sin recibir automáticamente los identificadores originales de los clientes.
+
+Por ello, no es necesario que todos los departamentos tengan acceso a todas las columnas de `public.clientes`.
+
+Los periodos de conservación deben establecerse de acuerdo con las finalidades y las obligaciones aplicables. El escenario no proporciona información suficiente para determinar plazos específicos.
 
 ### Evidencia
 
 - [Inventario y finalidad de los datos](evidencias/01-inventario-datos.md)
 
-## 3. Principio de minimización de datos
+## 3. Finalidades
+
+### Objetivo
+
+Generar información estadística para el departamento de analítica sin proporcionar directamente los datos personales que identifican a los clientes.
+
+### Procedimiento
+
+Se realizaron consultas SQL sobre la tabla `public.clientes`, utilizando funciones de agrupación y conteo.
+
+Primero se agruparon los clientes por ciudad mediante `COUNT()` y `GROUP BY`.
+
+Posteriormente, se utilizó `CASE` para clasificar a los clientes por rangos de edad.
+
+### Resultados
+
+Las consultas permitieron obtener estadísticas agrupadas sin incluir nombres, correos electrónicos, teléfonos ni RFC en los resultados.
+
+Se utilizaron las siguientes herramientas de SQL:
+
+- `COUNT()` para contar registros.
+- `GROUP BY` para agrupar información.
+- `ORDER BY` para ordenar resultados.
+- `CASE` para crear categorías de edad.
+
+Los resultados corresponden a grupos de clientes y no a registros individuales completos.
+
+### Pregunta de análisis
+
+**¿Por qué esta información puede ser más apropiada para analítica que entregar directamente la tabla completa de clientes?**
+
+Porque el departamento de analítica necesita generar estadísticas y no identificar individualmente a cada cliente.
+
+Las consultas agrupadas permiten conocer la distribución de los clientes por ciudad y rango de edad sin proporcionar directamente sus nombres, correos, teléfonos ni RFC.
+
+Esto contribuye a reducir la exposición de datos personales y aplica los principios de minimización y limitación de finalidad.
+
+Sin embargo, los resultados agregados también deben evaluarse, porque los grupos con muy pocos registros podrían facilitar la identificación de personas al combinarse con otra información.
+
+### Análisis
+
+La separación por finalidad permite proporcionar información diferente a cada departamento, dependiendo de sus funciones.
+
+Atención al cliente necesita información para contactar personas, mientras que analítica requiere principalmente datos estadísticos.
+
+Esto demuestra que no es necesario entregar acceso directo a toda la tabla para obtener resultados útiles.
+
+### Conclusión
+
+Se comprobó que las consultas de agrupación permiten generar información útil para analítica y disminuir la exposición de datos personales.
+
+En un entorno productivo sería recomendable implementar vistas y controles de acceso que permitan consultar únicamente la información necesaria.
+
+### Archivo SQL
+
+- [Consultas de separación por finalidad](sql/02-finalidad.sql)
+
+### Finalidad secundaria
+
+### Objetivo
+
+Evaluar los riesgos relacionados con el uso de información personal para una finalidad distinta de aquella para la que fue recopilada.
+
+### Procedimiento
+
+Se analizó la propuesta de utilizar edad, ciudad y comportamiento de compra para enviar promociones personalizadas.
+
+Se identificaron las condiciones que deberían revisarse antes de autorizar este tratamiento, así como los datos necesarios y los controles técnicos que podrían implementarse.
+
+### Resultados
+
+Se determinó que la organización no puede asumir que cualquier uso de los datos es válido simplemente porque ya dispone de ellos.
+
+También se identificó que marketing no necesita acceso directo a toda la tabla `public.clientes`.
+
+Se propusieron mecanismos como vistas, roles, permisos, agregación de información y controles para respetar las preferencias de los titulares.
+
+### Análisis
+
+Esta actividad permitió comprender que la seguridad técnica y la autorización para tratar datos personales son cuestiones diferentes.
+
+Los controles implementados por el DBA deben responder a finalidades previamente definidas y autorizadas por las áreas responsables.
+
+### Conclusión
+
+La utilización de datos para finalidades secundarias requiere analizar su justificación, necesidad y condiciones aplicables.
+
+La información entregada a cada departamento debe limitarse a lo necesario para cumplir sus funciones autorizadas.
+
+### Evidencia
+
+- [Análisis de finalidad secundaria](evidencias/05-finalidad-secundaria.md)
+
+## 4. Minimización
 
 ### Objetivo
 
@@ -80,67 +199,7 @@ También permitió comprender que el diseño de tablas y los permisos de acceso 
 
 - [Minimización de datos](sql/01-minimizacion.sql)
 
-## 4. Separación por finalidad
-
-### Objetivo
-
-Generar información estadística para el departamento de analítica sin proporcionar directamente los datos personales que identifican a los clientes.
-
-### Procedimiento
-
-Se realizaron consultas SQL sobre la tabla `public.clientes`, utilizando funciones de agrupación y conteo.
-
-Primero se agruparon los clientes por ciudad mediante `COUNT()` y `GROUP BY`.
-
-Posteriormente, se utilizó `CASE` para clasificar a los clientes por rangos de edad.
-
-Como complemento, se agruparon los códigos postales utilizando sus dos primeros caracteres.
-
-### Resultados
-
-Las consultas permitieron obtener estadísticas agrupadas sin incluir nombres, correos electrónicos, teléfonos ni RFC en los resultados.
-
-Se utilizaron las siguientes herramientas de SQL:
-
-- `COUNT()` para contar registros.
-- `GROUP BY` para agrupar información.
-- `ORDER BY` para ordenar resultados.
-- `CASE` para crear categorías de edad.
-- `LEFT()` para obtener prefijos postales.
-
-Los resultados corresponden a grupos de clientes y no a registros individuales completos.
-
-### Pregunta de análisis
-
-**¿Por qué esta información puede ser más apropiada para analítica que entregar directamente la tabla completa de clientes?**
-
-Porque el departamento de analítica necesita generar estadísticas y no identificar individualmente a cada cliente.
-
-Las consultas agrupadas permiten conocer la distribución de los clientes por ciudad, edad y prefijo postal sin proporcionar directamente sus nombres, correos, teléfonos ni RFC.
-
-Esto contribuye a reducir la exposición de datos personales y aplica los principios de minimización y limitación de finalidad.
-
-Sin embargo, los resultados agregados también deben evaluarse, porque los grupos con muy pocos registros podrían facilitar la identificación de personas al combinarse con otra información.
-
-### Análisis
-
-La separación por finalidad permite proporcionar información diferente a cada departamento, dependiendo de sus funciones.
-
-Atención al cliente necesita información para contactar personas, mientras que analítica requiere principalmente datos estadísticos.
-
-Esto demuestra que no es necesario entregar acceso directo a toda la tabla para obtener resultados útiles.
-
-### Conclusión
-
-Se comprobó que las consultas de agrupación permiten generar información útil para analítica y disminuir la exposición de datos personales.
-
-En un entorno productivo sería recomendable implementar vistas y controles de acceso que permitan consultar únicamente la información necesaria.
-
-### Archivo SQL
-
-- [Consultas de separación por finalidad](sql/02-finalidad.sql)
-
-## 5. Control de acceso relacionado con la finalidad
+## 5. Control de acceso
 
 ### Objetivo
 
@@ -232,43 +291,7 @@ Esta práctica permitió aplicar los principios de minimización de datos, limit
 
 - [Control de acceso relacionado con la finalidad](sql/03-control-acceso.sql)
 
-## 6. Análisis de una finalidad secundaria
-
-### Objetivo
-
-Evaluar los riesgos relacionados con el uso de información personal para una finalidad distinta de aquella para la que fue recopilada.
-
-### Procedimiento
-
-Se analizó la propuesta de utilizar edad, ciudad y comportamiento de compra para enviar promociones personalizadas.
-
-Se identificaron las condiciones que deberían revisarse antes de autorizar este tratamiento, así como los datos necesarios y los controles técnicos que podrían implementarse.
-
-### Resultados
-
-Se determinó que la organización no puede asumir que cualquier uso de los datos es válido simplemente porque ya dispone de ellos.
-
-También se identificó que marketing no necesita acceso directo a toda la tabla `public.clientes`.
-
-Se propusieron mecanismos como vistas, roles, permisos, agregación de información y controles para respetar las preferencias de los titulares.
-
-### Análisis
-
-Esta actividad permitió comprender que la seguridad técnica y la autorización para tratar datos personales son cuestiones diferentes.
-
-Los controles implementados por el DBA deben responder a finalidades previamente definidas y autorizadas por las áreas responsables.
-
-### Conclusión
-
-La utilización de datos para finalidades secundarias requiere analizar su justificación, necesidad y condiciones aplicables.
-
-La información entregada a cada departamento debe limitarse a lo necesario para cumplir sus funciones autorizadas.
-
-### Evidencia
-
-- [Análisis de finalidad secundaria](evidencias/05-finalidad-secundaria.md)
-
-## 7. Derecho ARCO de acceso
+## 6. Derechos ARCO
 
 ### Objetivo
 
@@ -341,7 +364,7 @@ La actividad permitió comprender que el derecho de acceso tiene implicaciones t
 
 PostgreSQL facilita la localización de registros mediante consultas SQL, pero atender una solicitud de acceso requiere procedimientos adicionales para verificar la identidad del titular, identificar la información correspondiente y protegerla durante su entrega.
 
-## 8. Derecho ARCO de rectificación
+### Derecho de rectificación
 
 ### Objetivo
 
@@ -436,7 +459,7 @@ Se comprobó que la instrucción modificó un único registro y que la transacci
 
 La actividad permitió comprender la importancia de verificar los datos antes de modificarlos y mantener mecanismos que permitan autorizar, registrar y rastrear las operaciones realizadas sobre información personal.
 
-## 9. Derecho ARCO de cancelación y ciclo de vida
+### Derecho de cancelación y ciclo de vida
 
 ### Objetivo
 
@@ -466,6 +489,9 @@ Por ello, es necesario identificar las ubicaciones de la información y determin
 
 Los periodos de conservación y las obligaciones aplicables también deben considerarse antes de eliminar información.
 
+Durante la revisión final se comprobó una diferencia entre dos copias de la información del cliente con `id = 1`: `public.clientes` contiene el correo actualizado `nuevo-correo@example.com`, mientras que `lab03.clientes_soporte` conserva `ana.lopez@example.test`.
+
+Este resultado demuestra que las copias creadas mediante `INSERT ... SELECT` no se mantienen sincronizadas automáticamente. No se modificaron registros durante la comprobación.
 ### Conclusión
 
 La cancelación de datos personales requiere analizar su ciclo de vida completo.
@@ -476,7 +502,7 @@ El DBA debe identificar dependencias y copias de información, colaborar con las
 
 - [Derecho de cancelación y ciclo de vida](evidencias/08-ciclo-vida.md)
 
-## 10. Derecho ARCO de oposición
+### Derecho de oposición
 
 ### Objetivo
 
@@ -564,7 +590,7 @@ La organización debe identificar qué finalidad está involucrada y determinar 
 
 El DBA debe implementar los mecanismos técnicos necesarios para respetar esas decisiones, sin asumir responsabilidades jurídicas que corresponden a otras áreas.
 
-## 11. Política de retención de datos
+## 7. Retención
 
 ### Objetivo
 
@@ -602,8 +628,21 @@ Una política documentada permite justificar la conservación de información y 
 
 - [Política de retención de datos](evidencias/10-retencion.md)
 
-## 12. Matriz de gobierno de datos
+## 8. Gobierno de datos
 
+### Matriz de responsabilidades
+
+| Dato | Finalidad | Responsable propuesto | Usuarios autorizados |
+|---|---|---|---|
+| Nombre | Identificación y atención | Administración de clientes | Atención al cliente y facturación |
+| Correo | Comunicación con clientes | Atención al cliente | Atención al cliente |
+| Teléfono | Contacto y seguimiento | Atención al cliente | Atención al cliente |
+| RFC | Identificación fiscal y facturación | Facturación | Personal autorizado de facturación |
+| Edad | Estadísticas por rangos | Responsable de analítica | Analítica mediante información agrupada |
+| Ciudad | Estadísticas geográficas y necesidades operativas | Administración de clientes | Analítica mediante resultados agregados y áreas operativas justificadas |
+| Código postal | Análisis regional y necesidades operativas | Administración de clientes | Analítica mediante regiones o agrupaciones y áreas operativas justificadas |
+
+Las responsabilidades indicadas son propuestas para el escenario académico. Su asignación definitiva corresponde a la organización.
 ### Objetivo
 
 Relacionar los principales datos personales de la organización con sus finalidades, responsables y usuarios autorizados.
@@ -644,7 +683,8 @@ Una matriz de responsabilidades ayuda a aplicar los principios de minimización,
 
 - [Matriz de gobierno de datos](evidencias/11-gobierno-datos.md)
 
-## 13. Privacidad por diseño
+## 9. Evaluación integral
+### Privacidad por diseño
 
 ### Objetivo
 
@@ -680,7 +720,7 @@ La privacidad por defecto contribuye a que el sistema comience con configuracion
 
 - [Análisis de privacidad por diseño](evidencias/12-privacidad-diseno.md)
 
-## 14. Controles técnicos y administrativos
+### Controles técnicos y administrativos
 
 ### Objetivo
 
@@ -793,7 +833,7 @@ Una organización necesita establecer políticas y responsabilidades claras, ade
 
 El DBA participa principalmente en la implementación y mantenimiento de los controles técnicos, pero debe trabajar de manera coordinada con las áreas responsables de privacidad, seguridad y cumplimiento.
 
-## 15. Evaluación integral de privacidad
+### Evaluación de riesgos
 
 ### Objetivo
 
@@ -837,7 +877,7 @@ El DBA debe colaborar en la identificación de riesgos y en la implementación d
 
 - [Matriz de evaluación integral de privacidad](evidencias/14-evaluacion-integral.md)
 
-## 16. Propuesta de arquitectura de datos protegidos
+### Propuesta de arquitectura de datos protegidos
 
 ### Objetivo
 
@@ -878,3 +918,117 @@ Se comprendió que una arquitectura protegida requiere considerar tanto los meca
 ### Evidencia
 
 - [Propuesta de arquitectura de datos protegidos](evidencias/15-arquitectura.md)
+
+## 10. Conclusiones
+
+Durante este laboratorio comprendí que la administración de bases de datos no consiste únicamente en almacenar información, ejecutar consultas y configurar permisos.
+
+También implica conocer las finalidades para las que se utilizan los datos y aplicar medidas que permitan proteger la privacidad de las personas.
+
+Mediante PostgreSQL trabajé con técnicas de minimización, separación de finalidades y control de acceso. Además, analicé las implicaciones técnicas de los derechos ARCO, la importancia de establecer políticas de retención y las responsabilidades relacionadas con el gobierno de datos.
+
+Uno de los aprendizajes más importantes fue comprender que una base de datos puede contar con mecanismos de seguridad y, aun así, presentar problemas de privacidad si recopila información innecesaria o permite utilizarla para finalidades no justificadas.
+
+También identifiqué que modificar o eliminar información de una tabla no garantiza que el cambio se refleje automáticamente en todas las copias existentes.
+
+Finalmente, comprendí que el DBA debe colaborar con las áreas responsables de privacidad, seguridad y cumplimiento. Su función consiste en implementar y mantener los controles técnicos necesarios, pero las decisiones sobre el tratamiento de datos deben involucrar a las áreas competentes.
+
+### Preguntas de reflexión
+
+**1. ¿Una base de datos técnicamente segura necesariamente cumple con todos los requisitos de privacidad?**
+
+No. Una base de datos puede contar con cifrado, contraseñas seguras y controles de acceso, pero eso no garantiza que los datos se recopilen y utilicen correctamente.
+
+Por ejemplo, una empresa podría proteger técnicamente una base de datos y, al mismo tiempo, almacenar información personal que no necesita.
+
+La seguridad protege la información frente a distintos riesgos, mientras que la privacidad también considera las finalidades, la necesidad y las condiciones del tratamiento.
+
+**2. ¿Por qué el principio de mínimo privilegio también contribuye a la privacidad?**
+
+Porque permite que cada usuario acceda únicamente a la información necesaria para realizar sus funciones.
+
+Esto reduce la exposición innecesaria de datos personales y limita las posibilidades de uso indebido.
+
+Durante el laboratorio aplicamos este principio al restringir el acceso del rol `analista` y utilizar una vista para presentar información limitada.
+
+**3. ¿Por qué el DBA no debería decidir por sí solo la finalidad del tratamiento de los datos?**
+
+Porque determinar las finalidades implica decisiones organizacionales, operativas y jurídicas.
+
+El DBA conoce los mecanismos técnicos para almacenar, proteger y administrar información, pero no necesariamente tiene la autoridad para decidir cómo puede utilizarla cada departamento.
+
+Estas decisiones deben involucrar a los responsables de los datos, privacidad y cumplimiento.
+
+**4. ¿Por qué los desarrolladores no deberían recibir automáticamente copias completas de bases de datos productivas?**
+
+Porque normalmente no necesitan toda la información real de los clientes para desarrollar y probar aplicaciones.
+
+Proporcionar copias completas puede exponer datos personales que no son necesarios para sus actividades.
+
+Es preferible utilizar información sintética o conjuntos de prueba limitados, siempre que permitan comprobar el funcionamiento de la aplicación.
+
+**5. ¿Por qué una copia utilizada para desarrollo también puede representar un riesgo de privacidad?**
+
+Porque sigue conteniendo información personal aunque se encuentre fuera del ambiente de producción.
+
+Si esa copia no cuenta con controles adecuados, los datos podrían quedar expuestos a personas no autorizadas.
+
+Además, las copias de desarrollo podrían conservarse innecesariamente o utilizarse para finalidades distintas de las originalmente establecidas.
+
+**6. ¿Por qué la retención debe formar parte del ciclo de vida de los datos?**
+
+Porque una organización debe determinar no solamente qué datos recopila y utiliza, sino también durante cuánto tiempo necesita conservarlos.
+
+Mantener información indefinidamente puede aumentar los riesgos de exposición y dificultar el cumplimiento de obligaciones de privacidad.
+
+Una política de retención permite establecer periodos justificados y procedimientos para revisar, eliminar o conservar información según corresponda.
+
+**7. ¿Qué relación existe entre privacidad por diseño y diseño de bases de datos?**
+
+La privacidad por diseño implica considerar la protección de los datos desde las primeras etapas de desarrollo de un sistema.
+
+En el diseño de bases de datos significa analizar qué campos son realmente necesarios, quién podrá consultarlos y cómo se protegerán.
+
+También requiere considerar la separación de finalidades, los controles de acceso y los periodos de conservación antes de implementar la estructura.
+
+**8. ¿Qué controles técnicos implementarías para reducir el riesgo de exposición de datos personales?**
+
+Implementaría los siguientes mecanismos:
+
+- Roles y permisos basados en el principio de mínimo privilegio.
+- Vistas que limiten las columnas y los registros disponibles.
+- Cifrado de datos cuando corresponda.
+- Conexiones protegidas mediante TLS.
+- Hash seguro para almacenar contraseñas.
+- Separación de ambientes de producción y desarrollo.
+- Registros de auditoría para operaciones relevantes.
+- Mecanismos de enmascaramiento y seudonimización cuando resulten apropiados.
+
+Estos controles deben responder a las necesidades de la organización y complementarse con políticas administrativas.
+
+**9. ¿Qué información debería conocer un DBA para responder técnicamente a una solicitud ARCO?**
+
+El DBA debería conocer qué datos personales almacena la organización, en qué tablas se encuentran y cómo se relacionan entre sí.
+
+También necesitaría identificar las copias de información, los sistemas relacionados y los permisos disponibles.
+
+Además, debe conocer el alcance de la solicitud autorizada y las acciones técnicas necesarias para atenderla.
+
+Por ejemplo, una solicitud de rectificación podría requerir actualizar más de una tabla si existen copias de los datos que no se sincronizan automáticamente.
+
+El DBA también debe considerar la trazabilidad de las operaciones y las posibles obligaciones de conservación.
+
+**10. ¿Qué responsabilidades deberían corresponder al DBA, al responsable de privacidad, al área jurídica y al propietario de los datos?**
+
+Las responsabilidades podrían distribuirse de la siguiente manera:
+
+| Función | Responsabilidad principal |
+|---|---|
+| DBA | Administrar la base de datos e implementar los controles técnicos autorizados, como permisos, vistas, cifrado y mecanismos de auditoría. |
+| Responsable de privacidad | Coordinar las políticas y procedimientos relacionados con la protección de datos personales y la atención de solicitudes. |
+| Área jurídica | Interpretar las obligaciones legales aplicables y asesorar sobre la procedencia de determinadas decisiones de tratamiento. |
+| Propietario de los datos | Definir y justificar las necesidades de uso de la información dentro de sus responsabilidades organizacionales. |
+
+Estas funciones deben colaborar para que las decisiones sobre privacidad puedan aplicarse mediante controles técnicos adecuados.
+
+El DBA no debería asumir individualmente decisiones que correspondan a otras áreas, pero sí debe aportar sus conocimientos para determinar si las medidas propuestas pueden implementarse de forma segura.
