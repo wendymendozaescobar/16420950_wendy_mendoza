@@ -38,3 +38,7 @@ SELECT
     address,
     auth_method
 FROM pg_hba_file_rules;
+
+-- Actividad 7: Revisar autenticación
+
+SHOW password_encryption;

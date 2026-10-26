@@ -376,6 +376,90 @@ Restringir la base de datos, el usuario, el origen y el método de autenticació
 
 La actividad consistió en diseñar una regla conceptual. No se modificó `pg_hba.conf` ni se crearon nuevos usuarios.
 
+### Actividad 7. Revisar autenticación
+
+**Objetivo**
+
+Identificar el mecanismo configurado para almacenar nuevas contraseñas en PostgreSQL y comprender la diferencia entre autenticación y autorización.
+
+**Procedimiento**
+
+Se consultó el parámetro `password_encryption` mediante la instrucción:
+
+```sql
+SHOW password_encryption;
+```
+
+**Resultado**
+
+Se obtuvo el siguiente valor:
+
+```text
+scram-sha-256
+```
+
+Este resultado indica que PostgreSQL está configurado para utilizar SCRAM-SHA-256 al establecer nuevas contraseñas.
+
+### Preguntas de análisis
+
+**1. ¿Qué diferencia existe entre autenticación y autorización?**
+
+La autenticación es el proceso mediante el cual un sistema verifica la identidad de un usuario.
+
+La autorización determina qué recursos puede consultar y qué operaciones puede realizar después de autenticarse.
+
+Por ejemplo, un usuario puede autenticarse correctamente en PostgreSQL, pero no tener autorización para consultar determinadas tablas.
+
+**2. ¿Qué protege `scram-sha-256`?**
+
+SCRAM-SHA-256 protege el proceso de autenticación mediante contraseña.
+
+Utiliza mecanismos criptográficos para verificar que el cliente conoce la contraseña sin transmitirla directamente como texto plano durante el intercambio de autenticación.
+
+También permite almacenar verificadores de contraseña en lugar de contraseñas recuperables directamente.
+
+Sin embargo, no sustituye el cifrado de las comunicaciones mediante TLS ni los controles de autorización.
+
+**3. ¿Por qué una contraseña almacenada mediante un mecanismo de autenticación no debe confundirse con cifrado reversible?**
+
+Porque cumplen propósitos diferentes.
+
+El cifrado reversible permite recuperar la información original utilizando una clave de descifrado.
+
+En cambio, los mecanismos de almacenamiento de contraseñas como SCRAM-SHA-256 utilizan verificadores derivados de la contraseña para comprobar su conocimiento sin necesitar recuperar el valor original.
+
+Por lo tanto, no debe tratarse una contraseña almacenada mediante SCRAM como si fuera información cifrada que simplemente pudiera descifrarse.
+
+**4. ¿Qué sucede si una cuenta tiene permisos excesivos aunque utilice una contraseña fuerte?**
+
+La cuenta puede representar un riesgo importante.
+
+Si un atacante obtiene acceso a ella, podría realizar todas las operaciones permitidas por sus privilegios.
+
+Por ejemplo, una aplicación que utiliza una cuenta `SUPERUSER` podría comprometer gravemente el servidor si sus credenciales son robadas.
+
+Por esta razón, las contraseñas seguras deben complementarse con el principio de mínimo privilegio.
+
+### Análisis
+
+La configuración observada utiliza SCRAM-SHA-256 para el almacenamiento de nuevas contraseñas, lo cual es adecuado para el entorno del laboratorio.
+
+Durante la revisión de `pg_hba.conf` también se identificó que las conexiones TCP locales utilizan `scram-sha-256`, mientras que determinadas conexiones mediante sockets Unix utilizan `peer`.
+
+Esto demuestra que los mecanismos de autenticación pueden variar según el tipo de conexión.
+
+También se comprendió que la autenticación no sustituye la autorización y que las cuentas deben disponer únicamente de los permisos necesarios para cumplir sus funciones.
+
+### Conclusión
+
+Se identificó el mecanismo configurado para el almacenamiento de nuevas contraseñas en PostgreSQL.
+
+La actividad permitió distinguir autenticación, autorización y cifrado reversible.
+
+Se comprendió que una configuración segura requiere combinar métodos adecuados de autenticación con permisos restringidos.
+
+No fue necesario modificar la configuración del servidor.
+
 ## Cambios realizados
 
 Todavía no se han realizado modificaciones de seguridad.
